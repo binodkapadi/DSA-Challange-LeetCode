@@ -1,0 +1,29 @@
+SOLUTION ==>
+
+class Solution {
+public:
+    bool containsNearbyAlmostDuplicate(vector<int>& nums, int indexDiff, int valueDiff) {
+        set<long long> window; // maintain last indexDiff elements
+
+        for (int i = 0; i < nums.size(); i++) {
+            long long num = nums[i];
+
+            // Find smallest element >= num - valueDiff
+            auto it = window.lower_bound(num - valueDiff);
+
+            // Check if within valueDiff range
+            if (it != window.end() && *it <= num + valueDiff) {
+                return true;
+            }
+
+            // Insert current number
+            window.insert(num);
+
+            // Maintain window size
+            if (window.size() > indexDiff) {
+                window.erase(nums[i - indexDiff]);
+            }
+        }
+        return false;    
+    }
+};

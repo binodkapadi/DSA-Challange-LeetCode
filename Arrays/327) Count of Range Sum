@@ -1,0 +1,54 @@
+SOLUTION ====>
+
+class Solution {
+public:
+    int countRangeSum(vector<int>& nums, int lower, int upper) {
+        int n = nums.size();
+        vector<long long> prefix(n + 1, 0);
+
+        // Step 1: Build prefix sum array
+        for (int i = 0; i < n; i++) {
+            prefix[i + 1] = prefix[i] + nums[i];
+        }
+
+        // Step 2: Call helper (merge sort–based)
+        return countWhileMergeSort(prefix, 0, n + 1, lower, upper);
+    }
+
+private:
+    long long countWhileMergeSort(vector<long long>& prefix, int left, int right, int lower, int upper) {
+        if (right - left <= 1) return 0; // base case (1 or 0 elements)
+
+        int mid = (left + right) / 2;
+        long long count = 0;
+
+        count += countWhileMergeSort(prefix, left, mid, lower, upper);
+        count += countWhileMergeSort(prefix, mid, right, lower, upper);
+
+        // Step 3: Count valid ranges
+        int j = mid, k = mid, t = mid;
+        vector<long long> temp;
+        for (int i = left; i < mid; i++) {
+            while (k < right && prefix[k] - prefix[i] < lower) k++;
+            while (j < right && prefix[j] - prefix[i] <= upper) j++;
+            while (t < right && prefix[t] < prefix[i]) temp.push_back(prefix[t++]);
+            temp.push_back(prefix[i]);
+            count += (j - k);
+        }
+
+        while (t < right) temp.push_back(prefix[t++]);
+
+        // Step 4: Merge the sorted halves back
+        for (int i = 0; i < temp.size(); i++)
+            prefix[left + i] = temp[i];
+
+        return count;    
+    }
+};
+
+
+
+| Type      | Complexity |
+| --------- | ---------- |
+| **Time**  | O(n log n) |
+| **Space** | O(n)       |

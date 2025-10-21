@@ -1,0 +1,59 @@
+SOLUTION ===>
+
+
+class Solution {
+public:
+    struct BIT {
+        vector<long long> bit;
+        int n;
+        BIT(int n): n(n), bit(n+1, 0) {}
+        
+        void update(int i, int val) {
+            for (++i; i <= n; i += i & -i)
+                bit[i] += val;
+        }
+        
+        long long query(int i) {
+            long long sum = 0;
+            for (++i; i > 0; i -= i & -i)
+                sum += bit[i];
+            return sum;
+        }
+    };
+    long long goodTriplets(vector<int>& nums1, vector<int>& nums2) {
+        int n = nums1.size();
+        vector<int> pos(n);
+        
+        // Step 1: Map values of nums2 to their indices
+        for (int i = 0; i < n; i++)
+            pos[nums2[i]] = i;
+        
+        // Step 2: Transform nums1 into position form based on nums2
+        vector<int> arr(n);
+        for (int i = 0; i < n; i++)
+            arr[i] = pos[nums1[i]];
+        
+        // Step 3: BIT for counting left and right smaller/greater elements
+        BIT leftBIT(n), rightBIT(n);
+        vector<long long> left(n), right(n);
+        
+        // Step 4: Compute left counts
+        for (int i = 0; i < n; i++) {
+            left[i] = leftBIT.query(arr[i] - 1);  // elements smaller before
+            leftBIT.update(arr[i], 1);
+        }
+        
+        // Step 5: Compute right counts
+        for (int i = n - 1; i >= 0; i--) {
+            right[i] = rightBIT.query(n - 1) - rightBIT.query(arr[i]);  // elements greater after
+            rightBIT.update(arr[i], 1);
+        }
+        
+        // Step 6: Combine counts
+        long long result = 0;
+        for (int i = 0; i < n; i++)
+            result += left[i] * right[i];
+        
+        return result;    
+    }
+};

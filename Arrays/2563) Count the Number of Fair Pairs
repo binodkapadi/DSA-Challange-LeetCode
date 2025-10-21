@@ -1,0 +1,23 @@
+SOLUTION ==>
+
+class Solution {
+public:
+    long long countFairPairs(vector<int>& nums, int lower, int upper) {
+        sort(nums.begin(), nums.end());
+
+        long long count = 0;
+        int n = nums.size();
+
+        for(int i = 0; i < n; i++){
+
+            long long low = lower - nums[i];
+            long long high = upper - nums[i];
+
+            auto left = lower_bound(nums.begin() + i + 1, nums.end(), low);
+            auto right = upper_bound(nums.begin() + i + 1, nums.end(), high);
+
+            count += (right - left);
+        }
+        return count;    
+    }
+};

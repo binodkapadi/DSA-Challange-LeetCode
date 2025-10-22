@@ -1,0 +1,41 @@
+SOLUTION ==>
+
+class Solution {
+public:
+    int maxFrequency(vector<int>& nums, int k, int numOperations) {
+        int maxVal = *max_element(nums.begin(), nums.end());
+        int size = maxVal + k + 2; // ensure safe range
+
+        vector<int> counts(size, 0);
+
+        // Step 1: Count frequencies
+        for (int num : nums) {
+            counts[num]++;
+        }
+
+        // Step 2: Prefix sum array
+        vector<int> prefix(size, 0);
+        prefix[0] = counts[0];
+        for (int i = 1; i < size; ++i) {
+            prefix[i] = prefix[i - 1] + counts[i];
+        }
+
+        // Step 3: Calculate max frequency after operations
+        int ans = 0;
+
+        for (int i = 0; i < size - k; ++i) {
+            int left = max(0, i - k - 1);
+            int right = min(i + k, size - 1);
+            int mid = counts[i];
+
+            // total elements within [i-k, i+k] excluding current
+            int convertibleAmount = prefix[right] - prefix[left] - mid;
+
+            if (convertibleAmount > numOperations)
+                ans = max(ans, mid + numOperations);
+            else
+                ans = max(ans, mid + convertibleAmount);
+        }
+        return ans;   
+    }
+};

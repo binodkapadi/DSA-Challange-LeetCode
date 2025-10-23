@@ -1,0 +1,42 @@
+SOLUTION ===>>
+
+
+class FindSumPairs {
+    vector<int> n1,n2;
+    unordered_map<int, int> freq2;
+
+public:
+    FindSumPairs(vector<int>& nums1, vector<int>& nums2) {
+        n1 = nums1;
+        n2 = nums2;
+        for(int x : n2){
+            freq2[x]++;     //build frequency map for n2.
+        }    
+    }
+    
+    void add(int index, int val) {
+        freq2[n2[index]]--; //decreasing the frequency of the old value in n2.
+        n2[index] += val;   //adding the value to the the given index in n2.
+        freq2[n2[index]]++; // increasing the new value frequency in n2.
+        
+    }
+    
+    // Count pairs such that n1[i] + n2[j] == tot
+    int count(int tot) {
+        int result = 0;
+        for(int x : n1){
+           int req = tot - x;
+           if(freq2.find(req) != freq2.end()){
+            result += freq2[req];
+           }
+        }  
+        return result;  
+    }
+};
+
+/**
+ * Your FindSumPairs object will be instantiated and called as such:
+ * FindSumPairs* obj = new FindSumPairs(nums1, nums2);
+ * obj->add(index,val);
+ * int param_2 = obj->count(tot);
+ */

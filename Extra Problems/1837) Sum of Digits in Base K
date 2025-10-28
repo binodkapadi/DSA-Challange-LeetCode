@@ -1,0 +1,19 @@
+SOLUTION ==> [Weekly Contest 238]
+
+In base conversion, dividing by k shifts the number right by one digit and the remainder is the removed digit.
+Summing remainders gives the sum of digits in that base.
+
+class Solution {
+public:
+    int sumBase(int n, int k) {
+        int sum = 0;
+        int rem;
+
+        while(n > 0){
+            rem = n % k;
+            sum += rem;
+            n /= k;   
+        }
+        return sum;
+    }
+};

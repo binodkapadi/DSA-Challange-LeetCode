@@ -1,0 +1,36 @@
+SOLUTION ===>
+
+
+class Solution {
+public:
+    vector<string> letterCombinations(string digits) {
+        if (digits.empty()) return {};
+
+        vector<string> phoneMap = {
+            "",    "",    "abc",  "def", "ghi", 
+            "jkl", "mno", "pqrs", "tuv", "wxyz"
+        };
+
+        vector<string> result;
+        string path = "";
+
+        backtrack(digits, phoneMap, 0, path, result);
+        return result;
+    }
+
+private:
+    void backtrack(const string &digits, const vector<string> &phoneMap,
+                   int index, string &path, vector<string> &result) {
+        if (index == digits.size()) {
+            result.push_back(path);
+            return;
+        }
+
+        string letters = phoneMap[digits[index] - '0'];
+        for (char c : letters) {
+            path.push_back(c);
+            backtrack(digits, phoneMap, index + 1, path, result);
+            path.pop_back(); // backtrack
+        }  
+    }
+};

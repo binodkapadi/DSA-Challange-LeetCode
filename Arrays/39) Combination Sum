@@ -1,0 +1,32 @@
+SOLUTION ===>
+
+class Solution {
+public:
+    
+    void backtrack(int idx, vector<int>& candidates, int target, 
+            vector<int>& current, vector<vector<int>>& result) {
+        // Base case: if target becomes 0, we found a valid combination
+        if (target == 0) {
+            result.push_back(current);
+            return;
+        }
+        // If we reach the end or target < 0, stop exploring
+        if (idx == candidates.size() || target < 0) return;
+
+        // Option 1: pick the current candidate
+        if (candidates[idx] <= target) {
+            current.push_back(candidates[idx]);
+            backtrack(idx, candidates, target - candidates[idx], current, result);
+            current.pop_back(); // backtrack
+        }
+
+        // Option 2: skip current candidate and move forward
+        backtrack(idx + 1, candidates, target, current, result);
+    }
+    vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
+        vector<vector<int>> result;
+        vector<int> current;
+        backtrack(0, candidates, target, current, result);
+        return result;    
+    }
+};

@@ -1,0 +1,29 @@
+SOLUTION ==>
+
+
+class Solution {
+public:
+    string largestNumber(vector<int>& nums) {
+        // Convert integers to strings
+        vector<string> arr;
+        for (int num : nums) {
+            arr.push_back(to_string(num));
+        }
+        
+        // Custom sort: compare concatenated results
+        sort(arr.begin(), arr.end(), [](string &a, string &b) {
+            return a + b > b + a;
+        });
+        
+        // If largest is "0", entire number is "0"
+        if (arr[0] == "0") return "0";
+        
+        // Build the result
+        string result = "";
+        for (string &s : arr) {
+            result += s;
+        }
+        
+        return result;    
+    }
+};

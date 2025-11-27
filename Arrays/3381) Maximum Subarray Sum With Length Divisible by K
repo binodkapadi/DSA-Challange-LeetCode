@@ -1,0 +1,24 @@
+SOLUTION ===>>
+
+class Solution {
+public:
+    long long maxSubarraySum(vector<int>& nums, int k) {
+        int n = nums.size();
+        vector<long long> minPref(k, LLONG_MAX);
+        long long prefix = 0;
+        long long ans = LLONG_MIN;
+
+        minPref[0] = 0; // prefix before starting
+
+        for (int i = 1; i <= n; i++) {
+            prefix += nums[i-1];
+            int r = i % k;
+
+            if (minPref[r] != LLONG_MAX)
+                ans = max(ans, prefix - minPref[r]);
+
+            minPref[r] = min(minPref[r], prefix);
+        }
+        return ans;
+    }
+};

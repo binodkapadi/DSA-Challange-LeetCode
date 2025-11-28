@@ -1,0 +1,35 @@
+SOLUTION ===>>
+
+class Solution {
+public:
+     int ans = 0;
+
+    long long dfs(int node, int parent, vector<vector<int>>& g, vector<long long>& values, long long k){
+        long long total = values[node];
+
+        for (int nei : g[node]) {
+            if (nei == parent) continue;
+            total += dfs(nei, node, g, values, k);
+        }
+
+        if (total % k == 0) {
+            ans++;
+            return 0; // Cut here
+        }
+
+        return total;
+    }
+
+    int maxKDivisibleComponents(int n, vector<vector<int>>& edges, vector<int>& values, int k) {
+         vector<vector<int>> g(n);
+        for (auto &e : edges) {
+            g[e[0]].push_back(e[1]);
+            g[e[1]].push_back(e[0]);
+        }
+
+        vector<long long> vals(values.begin(), values.end());
+        dfs(0, -1, g, vals, k);
+
+        return ans;
+    }
+};

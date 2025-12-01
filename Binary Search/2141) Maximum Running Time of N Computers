@@ -1,0 +1,33 @@
+SOLUTION ==>>
+
+class Solution {
+public:
+    long long maxRunTime(int n, vector<int>& batteries) {
+        long long left = 0, right = 0;
+        for (long long b : batteries) right += b;  // upper bound sum of all times
+        right /= n;  // max possible runtime
+        
+        long long ans = 0;
+        
+        while (left <= right) {
+            long long mid = left + (right - left) / 2;
+            if (canRun(mid, batteries, n)) {
+                ans = mid;
+                left = mid + 1;
+            } else {
+                right = mid - 1;
+            }
+        }
+        
+        return ans;
+    }
+    
+    bool canRun(long long T, vector<int>& batteries, int n) {
+        long long total = 0;
+        for (long long b : batteries) {
+            total += min(b, T);
+            if (total >= T * n) return true; // enough battery power
+        }
+        return total >= T * n;    
+    }
+};

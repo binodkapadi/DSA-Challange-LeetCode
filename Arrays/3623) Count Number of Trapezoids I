@@ -1,0 +1,38 @@
+SOLUTION ==>
+
+class Solution {
+public:
+    int countTrapezoids(vector<vector<int>>& points) {
+         const int MOD = 1e9 + 7;
+        
+        unordered_map<int, int> y_count;
+        for (const auto& p : points) {
+            y_count[p[1]]++;
+        }
+        
+        vector<int> comb;
+        for (const auto& kv : y_count) {
+            int c = kv.second;
+            if (c >= 2) {
+                comb.push_back((c * (c - 1LL) / 2) % MOD);
+            }
+        }
+        
+        if (comb.size() < 2) return 0;
+        
+        long long total_sum = 0;
+        long long sum_t = 0;
+        long long sum_t2 = 0;
+        
+        for (long long t : comb) {
+            sum_t = (sum_t + t) % MOD;
+            sum_t2 = (sum_t2 + t * t) % MOD;
+        }
+        
+        total_sum = (sum_t * sum_t - sum_t2) % MOD;
+        // Divide by 2 modulo MOD
+        total_sum = total_sum * (MOD + 1) / 2 % MOD;
+        
+        return total_sum;    
+    }
+};

@@ -1,0 +1,83 @@
+SOLUTION ==>>
+
+class Solution {
+public:
+    int countTrapezoids(vector<vector<int>>& points) {
+         int n = points.size();
+        // cnt1: slope -> (intercept-key -> count of segments on that line)
+        unordered_map<long long, unordered_map<long long,int>> cnt1;
+        // cnt2: (midpoint-key, slope) -> count of segments (for parallelograms)
+        unordered_map<long long, unordered_map<long long,int>> cnt2;
+
+        cnt1.reserve(n * n * 2);
+        cnt2.reserve(n * n * 2);
+
+        auto norm = [](int dx, int dy) {
+            if (dx == 0) return make_pair(0, 1);
+            if (dy == 0) return make_pair(1, 0);
+            int g = gcd(dx, dy);
+            dx /= g; dy /= g;
+            if (dx < 0) { dx = -dx; dy = -dy; }
+            return make_pair(dx, dy);
+        };
+
+        for (int i = 0; i < n; ++i) {
+            long long x1 = points[i][0], y1 = points[i][1];
+            for (int j = i + 1; j < n; ++j) {
+                long long x2 = points[j][0], y2 = points[j][1];
+
+                long long dx = x2 - x1;
+                long long dy = y2 - y1;
+                auto [nx, ny] = norm((int)dx, (int)dy);
+
+                // encode slope as 32‑bit (nx,ny) -> 64‑bit
+                long long k = ((long long)nx << 32) ^ (unsigned int)ny;
+
+                // line “intercept key”: for vertical, use x; otherwise use
+                // value of (ny*x - nx*y) which is constant on the line,
+                // so we avoid division.
+                long long b;
+                if (nx == 0) {           // vertical line
+                    b = x1;
+                } else {
+                    // ny * x - nx * y is same for all points on that line
+                    b = ny * x1 - (long long)nx * y1;
+                }
+
+                cnt1[k][b]++;
+
+                // midpoint key: encode (x1+x2, y1+y2) into one 64‑bit
+                long long mx = x1 + x2;
+                long long my = y1 + y2;
+                long long midKey = (mx << 32) ^ (unsigned int)my;
+                cnt2[midKey][k]++;
+            }
+        }
+
+        long long ans = 0;
+        // count all unordered pairs of parallel but non‑collinear segments
+        for (auto &kv : cnt1) {
+            auto &mp = kv.second;
+            long long pref = 0;
+            for (auto &kv2 : mp) {
+                long long c = kv2.second;
+                ans += pref * c;
+                pref += c;
+            }
+        }
+
+        // subtract parallelograms (two pairs of parallel opposite sides)
+        // each parallelogram corresponds to two pairs of parallel segments
+        for (auto &kv : cnt2) {
+            auto &mp = kv.second;
+            long long pref = 0;
+            for (auto &kv2 : mp) {
+                long long c = kv2.second;
+                ans -= pref * c;   // remove counted parallelograms
+                pref += c;
+            }
+        }
+
+        return ans;
+    }
+};

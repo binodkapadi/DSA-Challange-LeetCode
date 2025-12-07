@@ -1,0 +1,38 @@
+SOLUTION ===>>>>
+
+
+------------APPROACH 1[USING SIMPLE FOR LOOP]-----------
+
+class Solution {
+public:
+    int countOdds(int low, int high) {
+        int count = 0;
+        for(int i = low; i <= high; i++){
+            if(i % 2 != 0){
+                count++;
+            }
+        }
+        return count;
+    }
+};
+
+
+--------------APPROACH 2 [USING MATHEMATICAL FORMULA]----------
+
+class Solution {
+public:
+    int countOdds(int low, int high) {
+        return (high + 1) / 2 - (low / 2);
+    }
+};
+
+
+
+
+=======[OR]================
+
+
+# Count of even in range
+evenCount = (high - low) / 2
+# Count of odd in range
+oddCount = ((high - low) / 2) + 1

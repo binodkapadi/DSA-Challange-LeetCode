@@ -1,0 +1,33 @@
+SOLUTION ===>>
+
+class Solution {
+public:
+    int specialTriplets(vector<int>& nums) {
+        const long long MOD = 1e9 + 7;
+        int n = nums.size();
+        unordered_map<long long, long long> rightFreq, leftFreq;
+
+        // Fill rightFreq with all elements
+        for (int x : nums) rightFreq[x]++;
+
+        long long result = 0;
+
+        for (int j = 0; j < n; j++) {
+
+            // current element nums[j] will now move from right to left
+            rightFreq[nums[j]]--;
+
+            long long val = nums[j];
+            long long doubled = val * 2;
+
+            long long leftCount = leftFreq[doubled];   // nums[i] == 2 * nums[j]
+            long long rightCount = rightFreq[doubled]; // nums[k] == 2 * nums[j]
+
+            result = (result + (leftCount * rightCount) % MOD) % MOD;
+
+            // add nums[j] to left side
+            leftFreq[val]++;
+        }
+        return result;
+    }
+};

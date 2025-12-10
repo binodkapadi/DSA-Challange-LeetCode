@@ -1,0 +1,22 @@
+SOLUTION ===>>
+
+class Solution {
+public:
+    int countPermutations(vector<int>& complexity) {
+        const long long MOD = 1000000007LL;
+        int n = complexity.size();
+        if (n <= 1) return 1;
+
+        // Check that complexity[0] is strictly smaller than every other element
+        for (int i = 1; i < n; ++i) {
+            if (complexity[i] <= complexity[0]) return 0;
+        }
+
+        // Compute (n-1)! % MOD
+        long long fact = 1;
+        for (int k = 2; k <= n-1; ++k) {
+            fact = (fact * k) % MOD;
+        }
+        return (int)fact;
+    }
+};

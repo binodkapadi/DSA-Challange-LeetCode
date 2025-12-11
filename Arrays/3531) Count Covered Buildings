@@ -1,0 +1,43 @@
+SOLUTION  ====>>
+
+
+class Solution {
+public:
+    int countCoveredBuildings(int n, vector<vector<int>>& buildings) {
+        unordered_map<int, vector<int>> rows, cols;
+
+        // Fill the row and column maps
+        for (auto &b : buildings) {
+            int x = b[0], y = b[1];
+            rows[x].push_back(y);
+            cols[y].push_back(x);
+        }
+
+        // Sort each row and column for binary search
+        for (auto &r : rows) sort(r.second.begin(), r.second.end());
+        for (auto &c : cols) sort(c.second.begin(), c.second.end());
+
+        int covered = 0;
+
+        for (auto &b : buildings) {
+            int x = b[0], y = b[1];
+
+            auto &row = rows[x];
+            auto &col = cols[y];
+
+            // Check left and right using y in the row
+            auto it_row = lower_bound(row.begin(), row.end(), y);
+            bool hasLeft = (it_row != row.begin());
+            bool hasRight = (next(it_row) != row.end());
+
+            // Check above and below using x in the column
+            auto it_col = lower_bound(col.begin(), col.end(), x);
+            bool hasAbove = (it_col != col.begin());
+            bool hasBelow = (next(it_col) != col.end());
+
+            if (hasLeft && hasRight && hasAbove && hasBelow)
+                covered++;
+        }
+        return covered;    
+    }
+};

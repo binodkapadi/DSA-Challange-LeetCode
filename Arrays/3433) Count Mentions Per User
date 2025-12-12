@@ -1,0 +1,70 @@
+SOLUTION ====>>>
+
+class Solution {
+public:
+    vector<int> countMentions(int numberOfUsers, vector<vector<string>>& events) {
+        vector<int> offlineUntil(numberOfUsers, 0);
+        vector<int> mentions(numberOfUsers, 0);
+
+        // Convert events into sortable structure
+        struct E { 
+            int ts; 
+            string type; 
+            string arg; 
+        };
+
+        vector<E> ev;
+        for (auto &e : events) {
+            ev.push_back({stoi(e[1]), e[0], e[2]});
+        }
+
+        // Sort by timestamp, OFFLINE first when timestamps equal
+        sort(ev.begin(), ev.end(), [](auto &a, auto &b) {
+            if (a.ts != b.ts) return a.ts < b.ts;
+            return a.type < b.type;  // "OFFLINE" < "MESSAGE"
+        });
+
+        for (auto &e : ev) {
+            int ts = e.ts;
+            string type = e.type;
+            string arg = e.arg;
+
+            // Determine current online state
+            vector<bool> online(numberOfUsers, false);
+            for (int i = 0; i < numberOfUsers; i++)
+                online[i] = (ts >= offlineUntil[i]);
+
+            if (type == "OFFLINE") {
+                int id = stoi(arg);
+                offlineUntil[id] = ts + 60;
+            }
+            else { // MESSAGE
+                stringstream ss(arg);
+                string token;
+                ss >> token;
+
+                if (token == "ALL") {
+                    for (int i = 0; i < numberOfUsers; i++)
+                        mentions[i]++;
+                }
+                else if (token == "HERE") {
+                    for (int i = 0; i < numberOfUsers; i++)
+                        if (online[i])
+                            mentions[i]++;
+                }
+                else {
+                    // Explicit mentions: id1 id2 id1 ...
+                    // First token is already read; process all tokens including first one
+                    ss.clear();
+                    ss.str(arg);
+
+                    while (ss >> token) {
+                        int id = stoi(token.substr(2)); // remove "id"
+                        mentions[id]++;
+                    }
+                }
+            }
+        }
+        return mentions;       
+    }
+};

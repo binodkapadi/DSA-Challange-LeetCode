@@ -1,0 +1,72 @@
+SOLUTION ====>>
+
+class Solution {
+public:
+    static const int INF = 1e9;
+    vector<vector<int>> adj;
+    vector<vector<vector<int>>> dp;
+    vector<int> present, future;
+    int B;
+
+    int maxProfit(int n, vector<int>& present, vector<int>& future,
+                  vector<vector<int>>& hierarchy, int budget) {
+
+        this->present = present;
+        this->future = future;
+        this->B = budget;
+
+        adj.assign(n + 1, {});
+        for (auto &e : hierarchy)
+            adj[e[0]].push_back(e[1]);
+
+        dp.assign(n + 1, vector<vector<int>>(2, vector<int>(B + 1, -INF)));
+
+        dfs(1);
+
+        int ans = 0;
+        for (int c = 0; c <= B; c++)
+            ans = max(ans, dp[1][0][c]);
+
+        return ans;
+    }
+
+    void dfs(int u) {
+        // 🔥 DFS CHILDREN ONCE
+        for (int v : adj[u]) {
+            dfs(v);
+        }
+
+        for (int pb = 0; pb <= 1; pb++) {
+            vector<int> cur(B + 1, -INF);
+            cur[0] = 0;
+
+            // u does NOT buy
+            for (int v : adj[u]) {
+                cur = merge(cur, dp[v][0]);
+            }
+            dp[u][pb] = cur;
+
+            // u BUYS
+            int cost = pb ? present[u - 1] / 2 : present[u - 1];
+            if (cost <= B) {
+                vector<int> buy(B + 1, -INF);
+                buy[cost] = future[u - 1] - cost;
+
+                for (int v : adj[u]) {
+                    buy = merge(buy, dp[v][1]);
+                }
+
+                for (int c = 0; c <= B; c++)
+                    dp[u][pb][c] = max(dp[u][pb][c], buy[c]);
+            }
+        }
+    }
+
+    vector<int> merge(const vector<int>& a, const vector<int>& b) {
+        vector<int> res(B + 1, -INF);
+        for (int i = 0; i <= B; i++) if (a[i] != -INF)
+            for (int j = 0; i + j <= B; j++) if (b[j] != -INF)
+                res[i + j] = max(res[i + j], a[i] + b[j]);
+        return res;
+    }
+};

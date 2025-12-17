@@ -1,0 +1,41 @@
+SOLUTION ===>>
+
+class Solution {
+public:
+    long long maximumProfit(vector<int>& prices, int k) {
+        int n = prices.size();
+        const long long NEG = -1e18;
+
+        // dp[used][state]
+        vector<vector<long long>> dp(k + 1, vector<long long>(3, NEG));
+        dp[0][0] = 0; // flat
+
+        for (int price : prices) {
+            auto ndp = dp;
+            for (int used = 0; used <= k; used++) {
+                // From flat
+                if (dp[used][0] != NEG) {
+                    ndp[used][1] = max(ndp[used][1], dp[used][0] - price); // buy
+                    ndp[used][2] = max(ndp[used][2], dp[used][0] + price); // sell
+                }
+
+                // From long
+                if (dp[used][1] != NEG && used < k) {
+                    ndp[used + 1][0] = max(ndp[used + 1][0], dp[used][1] + price);
+                }
+
+                // From short
+                if (dp[used][2] != NEG && used < k) {
+                    ndp[used + 1][0] = max(ndp[used + 1][0], dp[used][2] - price);
+                }
+            }
+            dp = ndp;
+        }
+
+        long long ans = 0;
+        for (int used = 0; used <= k; used++) {
+            ans = max(ans, dp[used][0]);
+        }
+        return ans;
+    }
+};

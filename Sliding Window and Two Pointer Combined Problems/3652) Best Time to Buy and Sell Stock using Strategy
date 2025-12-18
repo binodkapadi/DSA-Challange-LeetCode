@@ -1,0 +1,33 @@
+SOLUTION ===>>
+
+class Solution {
+public:
+    long long maxProfit(vector<int>& prices, vector<int>& strategy, int k) {
+        int n = prices.size();
+        long long base = 0;
+
+        vector<long long> A(n), B(n);
+        for (int i = 0; i < n; i++) {
+            base += 1LL * strategy[i] * prices[i];
+            A[i] = 1LL * strategy[i] * prices[i];
+            B[i] = 1LL * (1 - strategy[i]) * prices[i];
+        }
+
+        // Prefix sums
+        vector<long long> prefA(n + 1, 0), prefB(n + 1, 0);
+        for (int i = 0; i < n; i++) {
+            prefA[i + 1] = prefA[i] + A[i];
+            prefB[i + 1] = prefB[i] + B[i];
+        }
+
+        long long bestDelta = 0;
+        int half = k / 2;
+
+        for (int l = 0; l + k <= n; l++) {
+            int mid = l + half;
+            long long delta = -(prefA[mid] - prefA[l]) + (prefB[l + k] - prefB[mid]);
+            bestDelta = max(bestDelta, delta);
+        }
+        return base + bestDelta;    
+    }
+};

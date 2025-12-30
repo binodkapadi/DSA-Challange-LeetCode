@@ -1,0 +1,60 @@
+SOLUTION ==>>
+
+class Solution {
+public:
+    int numMagicSquaresInside(vector<vector<int>>& grid) {
+        int rows = grid.size();
+        int cols = grid[0].size();
+        int count = 0;
+
+        for (int i = 0; i + 2 < rows; i++) {
+            for (int j = 0; j + 2 < cols; j++) {
+
+                // Center must be 5
+                if (grid[i+1][j+1] != 5) continue;
+
+                vector<int> seen(10, 0);
+                bool valid = true;
+
+                // Check numbers 1–9 and distinct
+                for (int r = i; r < i + 3 && valid; r++) {
+                    for (int c = j; c < j + 3; c++) {
+                        int x = grid[r][c];
+                        if (x < 1 || x > 9 || seen[x]++) {
+                            valid = false;
+                            break;
+                        }
+                    }
+                }
+
+                if (!valid) continue;
+
+                // Check rows
+                for (int r = 0; r < 3; r++) {
+                    if (grid[i+r][j] + grid[i+r][j+1] + grid[i+r][j+2] != 15) {
+                        valid = false;
+                        break;
+                    }
+                }
+
+                // Check columns
+                for (int c = 0; c < 3 && valid; c++) {
+                    if (grid[i][j+c] + grid[i+1][j+c] + grid[i+2][j+c] != 15) {
+                        valid = false;
+                        break;
+                    }
+                }
+
+                // Check diagonals
+                if (valid &&
+                    (grid[i][j] + grid[i+1][j+1] + grid[i+2][j+2] != 15 ||
+                     grid[i][j+2] + grid[i+1][j+1] + grid[i+2][j] != 15)) {
+                    valid = false;
+                }
+
+                if (valid) count++;
+            }
+        }
+        return count;   
+    }
+};

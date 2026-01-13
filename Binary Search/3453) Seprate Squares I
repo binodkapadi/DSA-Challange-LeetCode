@@ -1,0 +1,39 @@
+class Solution {
+public:
+    double separateSquares(vector<vector<int>>& squares) {
+        long double totalArea = 0;
+        long double minY = LLONG_MAX, maxY = 0;
+
+        for (auto &s : squares) {
+            long double y = s[1];
+            long double l = s[2];
+            totalArea += l * l;
+            minY = min(minY, y);
+            maxY = max(maxY, y + l);
+        }
+
+        long double half = totalArea / 2.0;
+
+        auto areaBelow = [&](long double h) {
+            long double area = 0;
+            for (auto &s : squares) {
+                long double y = s[1];
+                long double l = s[2];
+                long double height = min(max(h - y, (long double)0), l);
+                area += height * l;
+            }
+            return area;
+        };
+
+        long double left = minY, right = maxY;
+
+        for (int i = 0; i < 70; i++) { // enough for 1e-6 accuracy
+            long double mid = (left + right) / 2;
+            if (areaBelow(mid) < half)
+                left = mid;
+            else
+                right = mid;
+        }
+        return (double)left;    
+    }
+};

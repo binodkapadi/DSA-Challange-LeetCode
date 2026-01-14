@@ -1,0 +1,89 @@
+SOLUTION ==>>
+
+class Solution {
+public:
+    struct Event {
+        long long y;
+        int type; // +1 = add, -1 = remove
+        long long x1, x2;
+        bool operator<(const Event& other) const {
+            return y < other.y;
+        }
+    };
+
+    // Compute union length of x-intervals
+    long long unionLength(vector<pair<long long, long long>>& intervals) {
+        if (intervals.empty()) return 0;
+        sort(intervals.begin(), intervals.end());
+        long long total = 0;
+        long long l = intervals[0].first;
+        long long r = intervals[0].second;
+
+        for (int i = 1; i < intervals.size(); i++) {
+            if (intervals[i].first > r) {
+                total += (r - l);
+                l = intervals[i].first;
+                r = intervals[i].second;
+            } else {
+                r = max(r, intervals[i].second);
+            }
+        }
+        total += (r - l);
+        return total;
+    }
+
+    double separateSquares(vector<vector<int>>& squares) {
+        vector<Event> events;
+
+        for (auto& s : squares) {
+            long long x = s[0], y = s[1], l = s[2];
+            events.push_back({y, +1, x, x + l});
+            events.push_back({y + l, -1, x, x + l});
+        }
+
+        sort(events.begin(), events.end());
+
+        vector<tuple<long long, long long, long long>> segments;
+        multiset<pair<long long, long long>> active;
+
+        long long prevY = events[0].y;
+        long long totalArea = 0;
+
+        for (int i = 0; i < events.size(); i++) {
+            long long currY = events[i].y;
+
+            if (currY > prevY && !active.empty()) {
+                vector<pair<long long, long long>> intervals(active.begin(), active.end());
+                long long width = unionLength(intervals);
+                long long height = currY - prevY;
+                long long area = width * height;
+
+                segments.emplace_back(prevY, currY, width);
+                totalArea += area;
+            }
+
+            while (i < events.size() && events[i].y == currY) {
+                if (events[i].type == 1)
+                    active.insert({events[i].x1, events[i].x2});
+                else
+                    active.erase(active.find({events[i].x1, events[i].x2}));
+                i++;
+            }
+            i--;
+            prevY = currY;
+        }
+
+        double half = totalArea / 2.0;
+        double accumulated = 0;
+
+        for (auto& [y1, y2, width] : segments) {
+            double area = (y2 - y1) * (double)width;
+            if (accumulated + area >= half) {
+                double need = half - accumulated;
+                return y1 + need / width;
+            }
+            accumulated += area;
+        }
+        return 0.0;    
+    }
+};

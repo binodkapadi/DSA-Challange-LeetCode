@@ -1,0 +1,24 @@
+SOLUTION ===>>
+
+class Solution {
+public:
+    vector<int> minBitwiseArray(vector<int>& nums) {
+        vector<int> ans;
+        
+        for (int num : nums) {
+            int x = -1;
+            
+            // Try all possible x values from 0 to num-1
+            // Since we want the smallest x, we check in increasing order
+            for (int candidate = 0; candidate < num; candidate++) {
+                if ((candidate | (candidate + 1)) == num) {
+                    x = candidate;
+                    break;
+                }
+            }
+            
+            ans.push_back(x);
+        }     
+        return ans;
+    }
+};

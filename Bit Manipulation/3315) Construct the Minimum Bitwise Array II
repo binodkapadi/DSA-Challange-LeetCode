@@ -1,0 +1,35 @@
+SOLUTION ===>>
+
+class Solution {
+public:
+    vector<int> minBitwiseArray(vector<int>& nums) {
+        vector<int> ans;
+        
+        for (int n : nums) {
+            // Find length of trailing 1's
+            int L = 0;
+            int temp = n;
+            while ((temp & 1) == 1) {
+                L++;
+                temp >>= 1;
+            }
+            
+            if (L == 0) {
+                // n ends with 0, cannot be represented
+                ans.push_back(-1);
+                continue;
+            }
+            
+            // Calculate candidate
+            int candidate = n - (1 << (L - 1));
+            
+            // Verify
+            if ((candidate | (candidate + 1)) == n) {
+                ans.push_back(candidate);
+            } else {
+                ans.push_back(-1);
+            }
+        }   
+        return ans;    
+    }
+};

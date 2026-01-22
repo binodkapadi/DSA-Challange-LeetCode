@@ -1,0 +1,40 @@
+SOLUTION ===>>
+
+class Solution {
+public:
+    int minimumPairRemoval(vector<int>& nums) {
+        int operations = 0;
+        vector<int> arr = nums;
+        
+        while (true) {
+            // Check if array is non-decreasing
+            bool isSorted = true;
+            for (int i = 1; i < arr.size(); i++) {
+                if (arr[i] < arr[i - 1]) {
+                    isSorted = false;
+                    break;
+                }
+            }
+            if (isSorted) break;
+            
+            // Find the adjacent pair with minimum sum (leftmost if tie)
+            int minSum = INT_MAX;
+            int minIndex = -1;
+            
+            for (int i = 0; i < arr.size() - 1; i++) {
+                int currentSum = arr[i] + arr[i + 1];
+                if (currentSum < minSum) {
+                    minSum = currentSum;
+                    minIndex = i;
+                }
+            }
+            
+            // Replace the pair with their sum
+            arr[minIndex] = minSum;
+            arr.erase(arr.begin() + minIndex + 1);
+            
+            operations++;
+        } 
+        return operations;
+    }
+};

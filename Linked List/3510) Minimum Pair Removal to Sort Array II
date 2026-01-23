@@ -1,0 +1,86 @@
+SOLUTION ==>>
+
+class Solution {
+    struct Pair {
+        long long sum;
+        int leftIdx;
+        
+        // Custom comparator for min-priority queue (min sum, then min index)
+        bool operator>(const Pair& other) const {
+            if (sum != other.sum) return sum > other.sum;
+            return leftIdx > other.leftIdx;
+        }
+    };
+
+public:
+    int minimumPairRemoval(vector<int>& nums) {
+        int n = nums.size();
+        if (n <= 1) return 0;
+
+        // Check if already sorted
+        auto is_sorted = [&]() {
+            for (int i = 0; i < nums.size() - 1; ++i) {
+                if (nums[i] > nums[i+1]) return false;
+            }
+            return true;
+        };
+        // Note: A simple check isn't enough because the array changes.
+        // We simulate until non-decreasing.
+
+        int operations = 0;
+        
+        // Doubly Linked List nodes
+        vector<long long> val(n);
+        vector<int> L(n), R(n);
+        priority_queue<Pair, vector<Pair>, greater<Pair>> pq;
+
+        for (int i = 0; i < n; ++i) {
+            val[i] = nums[i];
+            L[i] = i - 1;
+            R[i] = i + 1;
+            if (i < n - 1) {
+                pq.push({(long long)nums[i] + nums[i+1], i});
+            }
+        }
+        R[n-1] = -1;
+
+        auto check_sorted = [&]() {
+            int curr = 0;
+            // Find first node
+            while (L[curr] != -1) curr = L[curr];
+            while (R[curr] != -1) {
+                if (val[curr] > val[R[curr]]) return false;
+                curr = R[curr];
+            }
+            return true;
+        };
+
+        while (!check_sorted()) {
+            Pair top = pq.top();
+            pq.pop();
+
+            int i = top.leftIdx;
+            int j = R[i];
+
+            // Validity Check: If j is no longer i's right neighbor, this pair is stale
+            if (j == -1 || (long long)val[i] + val[j] != top.sum) continue;
+
+            // Perform Merge: i becomes the sum, j is removed
+            val[i] = val[i] + val[j];
+            int next_after_j = R[j];
+            R[i] = next_after_j;
+            if (next_after_j != -1) L[next_after_j] = i;
+
+            // Push new potential pairs
+            if (L[i] != -1) {
+                pq.push({val[L[i]] + val[i], L[i]});
+            }
+            if (R[i] != -1) {
+                pq.push({val[i] + val[R[i]], i});
+            }
+
+            operations++;
+        }
+        return operations;
+    }
+};

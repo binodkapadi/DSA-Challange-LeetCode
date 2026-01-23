@@ -1,86 +1,146 @@
-SOLUTION ==>>
+SOLUTION ==>>>
+
 
 class Solution {
-    struct Pair {
-        long long sum;
-        int leftIdx;
-        
-        // Custom comparator for min-priority queue (min sum, then min index)
-        bool operator>(const Pair& other) const {
-            if (sum != other.sum) return sum > other.sum;
-            return leftIdx > other.leftIdx;
-        }
-    };
-
 public:
     int minimumPairRemoval(vector<int>& nums) {
         int n = nums.size();
         if (n <= 1) return 0;
-
-        // Check if already sorted
-        auto is_sorted = [&]() {
-            for (int i = 0; i < nums.size() - 1; ++i) {
-                if (nums[i] > nums[i+1]) return false;
+        
+        // Quick check: if array is already sorted
+        bool sorted = true;
+        for (int i = 1; i < n; i++) {
+            if (nums[i] < nums[i-1]) {
+                sorted = false;
+                break;
             }
-            return true;
-        };
-        // Note: A simple check isn't enough because the array changes.
-        // We simulate until non-decreasing.
-
+        }
+        if (sorted) return 0;
+        
+        // Data structures
+        vector<long long> val(n);
+        vector<int> left(n), right(n);
+        vector<bool> active(n, true);
+        vector<bool> hasViolation(n-1, false); // Track violations between i and i+1
+        
+        // Initialize
+        for (int i = 0; i < n; i++) {
+            val[i] = nums[i];
+            left[i] = i - 1;
+            right[i] = i + 1;
+            if (i < n - 1) {
+                hasViolation[i] = (nums[i] > nums[i+1]);
+            }
+        }
+        left[0] = -1;
+        right[n-1] = -1;
+        
+        // Count initial violations
+        int violationCount = 0;
+        for (int i = 0; i < n - 1; i++) {
+            if (hasViolation[i]) violationCount++;
+        }
+        
+        // Min-heap: (sum, left_index)
+        using Pair = pair<long long, int>;
+        priority_queue<Pair, vector<Pair>, greater<Pair>> pq;
+        
+        // Initialize with all adjacent pairs
+        for (int i = 0; i < n - 1; i++) {
+            pq.push({val[i] + val[i+1], i});
+        }
+        
         int operations = 0;
         
-        // Doubly Linked List nodes
-        vector<long long> val(n);
-        vector<int> L(n), R(n);
-        priority_queue<Pair, vector<Pair>, greater<Pair>> pq;
-
-        for (int i = 0; i < n; ++i) {
-            val[i] = nums[i];
-            L[i] = i - 1;
-            R[i] = i + 1;
-            if (i < n - 1) {
-                pq.push({(long long)nums[i] + nums[i+1], i});
+        while (violationCount > 0) {
+            // Get next valid pair from heap
+            bool found = false;
+            long long currentSum;
+            int leftIdx;
+            
+            while (!pq.empty()) {
+                auto [sum, idx] = pq.top();
+                pq.pop();
+                
+                // Skip if this index is no longer active
+                if (!active[idx]) continue;
+                
+                int rightIdx = right[idx];
+                // Check if right index exists and is active
+                if (rightIdx == -1 || !active[rightIdx]) continue;
+                
+                // Check if sum is still valid
+                if (val[idx] + val[rightIdx] == sum) {
+                    currentSum = sum;
+                    leftIdx = idx;
+                    found = true;
+                    break;
+                }
             }
-        }
-        R[n-1] = -1;
-
-        auto check_sorted = [&]() {
-            int curr = 0;
-            // Find first node
-            while (L[curr] != -1) curr = L[curr];
-            while (R[curr] != -1) {
-                if (val[curr] > val[R[curr]]) return false;
-                curr = R[curr];
+            
+            if (!found) break;
+            
+            int rightIdx = right[leftIdx];
+            
+            // Remove violations involving these indices
+            // Violation with left neighbor
+            int prevIdx = left[leftIdx];
+            if (prevIdx != -1 && hasViolation[prevIdx]) {
+                hasViolation[prevIdx] = false;
+                violationCount--;
             }
-            return true;
-        };
-
-        while (!check_sorted()) {
-            Pair top = pq.top();
-            pq.pop();
-
-            int i = top.leftIdx;
-            int j = R[i];
-
-            // Validity Check: If j is no longer i's right neighbor, this pair is stale
-            if (j == -1 || (long long)val[i] + val[j] != top.sum) continue;
-
-            // Perform Merge: i becomes the sum, j is removed
-            val[i] = val[i] + val[j];
-            int next_after_j = R[j];
-            R[i] = next_after_j;
-            if (next_after_j != -1) L[next_after_j] = i;
-
-            // Push new potential pairs
-            if (L[i] != -1) {
-                pq.push({val[L[i]] + val[i], L[i]});
+            
+            // Violation between leftIdx and rightIdx
+            if (hasViolation[leftIdx]) {
+                hasViolation[leftIdx] = false;
+                violationCount--;
             }
-            if (R[i] != -1) {
-                pq.push({val[i] + val[R[i]], i});
+            
+            // Violation between rightIdx and its right neighbor
+            int nextRightIdx = right[rightIdx];
+            if (nextRightIdx != -1 && hasViolation[rightIdx]) {
+                hasViolation[rightIdx] = false;
+                violationCount--;
             }
-
+            
+            // Merge the pair
+            val[leftIdx] = currentSum;
+            active[rightIdx] = false;
             operations++;
+            
+            // Update linked list pointers
+            right[leftIdx] = nextRightIdx;
+            if (nextRightIdx != -1) {
+                left[nextRightIdx] = leftIdx;
+            }
+            
+            // Add new potential violations
+            // Check left neighbor
+            if (prevIdx != -1 && active[prevIdx]) {
+                if (val[prevIdx] > val[leftIdx]) {
+                    hasViolation[prevIdx] = true;
+                    violationCount++;
+                }
+            }
+            
+            // Check right neighbor
+            if (nextRightIdx != -1 && active[nextRightIdx]) {
+                if (val[leftIdx] > val[nextRightIdx]) {
+                    hasViolation[leftIdx] = true;
+                    violationCount++;
+                }
+            }
+            
+            // Add new potential pairs to heap
+            if (prevIdx != -1 && active[prevIdx]) {
+                pq.push({val[prevIdx] + val[leftIdx], prevIdx});
+            }
+            
+            if (nextRightIdx != -1 && active[nextRightIdx]) {
+                pq.push({val[leftIdx] + val[nextRightIdx], leftIdx});
+            }
         }
+        
         return operations;
     }
 };

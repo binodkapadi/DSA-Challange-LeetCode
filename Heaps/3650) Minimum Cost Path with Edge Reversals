@@ -1,0 +1,58 @@
+SOLUTION ===>>
+
+class Solution {
+public:
+    int minCost(int n, vector<vector<int>>& edges) {
+        vector<vector<pair<int, pair<int, bool>>>> adj(n);
+        
+        for (const auto& edge : edges) {
+            int u = edge[0];
+            int v = edge[1];
+            int w = edge[2];
+            // Standard edge
+            adj[u].push_back({v, {w, false}});
+            // Potential reversed edge (starts at v, goes to u)
+            adj[v].push_back({u, {2 * w, true}});
+        }
+
+        // dist[u][0] = min cost to reach u without using u's switch to get there
+        // dist[u][1] = min cost to reach u using u's switch (not applicable here 
+        // because the switch is used at the STARTING node of the edge)
+        
+        // Simplified: Since the switch is per node and used to EXIT, 
+        // we just need to track if we've used the switch at the current node 
+        // to traverse a reversed edge.
+        
+        vector<long long> dist(n, -1);
+        priority_queue<pair<long long, int>, vector<pair<long long, int>>, greater<pair<long long, int>>> pq;
+
+        dist[0] = 0;
+        pq.push({0, 0});
+
+        while (!pq.empty()) {
+            auto [d, u] = pq.top();
+            pq.pop();
+
+            if (d > dist[u] && dist[u] != -1) continue;
+            if (u == n - 1) return (int)d;
+
+            // From node u, we can take any original outgoing edge
+            // OR use node u's switch to take ONE incoming edge in reverse.
+            for (auto& edge : adj[u]) {
+                int v = edge.first;
+                int weight = edge.second.first;
+                bool is_rev = edge.second.second;
+
+                // If it's a normal edge, just go.
+                // If it's a reversed edge, it uses the switch of node u.
+                // The problem says "at most once" per node.
+                
+                if (dist[v] == -1 || dist[u] + weight < dist[v]) {
+                    dist[v] = dist[u] + weight;
+                    pq.push({dist[v], v});
+                }
+            }
+        }
+        return dist[n - 1];
+    }
+};

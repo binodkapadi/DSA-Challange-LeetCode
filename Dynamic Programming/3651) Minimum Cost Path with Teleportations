@@ -1,0 +1,55 @@
+class Solution {
+public:
+    int minCost(vector<vector<int>>& grid, int k) {
+        int m = grid.size();
+        int n = grid[0].size();
+        const int INF = 1e9;
+
+        vector<vector<int>> dp(m, vector<int>(n, INF));
+        dp[0][0] = 0;
+
+        for (int t = 0; t <= k; ++t) {
+            for (int i = 0; i < m; ++i) {
+                for (int j = 0; j < n; ++j) {
+                    if (dp[i][j] == INF) continue;
+                    if (i + 1 < m) dp[i + 1][j] = min(dp[i + 1][j], dp[i][j] + grid[i + 1][j]);
+                    if (j + 1 < n) dp[i][j + 1] = min(dp[i][j + 1], dp[i][j] + grid[i][j + 1]);
+                }
+            }
+
+            if (t < k) {
+                vector<vector<int>> next_dp(m, vector<int>(n, INF));
+                int max_val = 0;
+                for (int i = 0; i < m; ++i) {
+                    for (int j = 0; j < n; ++j) {
+                        max_val = max(max_val, grid[i][j]);
+                    }
+                }
+
+                vector<int> min_cost_by_val(max_val + 1, INF);
+                for (int i = 0; i < m; ++i) {
+                    for (int j = 0; j < n; ++j) {
+                        if (dp[i][j] != INF) {
+                            min_cost_by_val[grid[i][j]] = min(min_cost_by_val[grid[i][j]], dp[i][j]);
+                        }
+                    }
+                }
+
+                int best_source_cost = INF;
+                for (int v = max_val; v >= 0; --v) {
+                    best_source_cost = min(best_source_cost, min_cost_by_val[v]);
+                    min_cost_by_val[v] = best_source_cost;
+                }
+
+                for (int i = 0; i < m; ++i) {
+                    for (int j = 0; j < n; ++j) {
+                        next_dp[i][j] = min(dp[i][j], min_cost_by_val[grid[i][j]]);
+                    }
+                }
+                dp = next_dp;
+            }
+        }
+
+        return dp[m - 1][n - 1] == INF ? -1 : dp[m - 1][n - 1];
+    }
+};

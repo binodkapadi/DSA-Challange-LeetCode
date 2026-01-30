@@ -1,0 +1,84 @@
+SOLUTION ===>>>
+
+
+class Solution {
+public:
+    long long minimumCost(string source, string target, vector<string>& original, vector<string>& changed, vector<int>& cost) {
+        const long long INF = 1e18;
+        int n = source.size();
+        int m = original.size();
+
+        // Group rules by substring length
+        unordered_map<int, vector<int>> byLen;
+        for (int i = 0; i < m; i++) {
+            byLen[original[i].size()].push_back(i);
+        }
+
+        // minCost[len][from][to]
+        unordered_map<int, unordered_map<string, unordered_map<string, long long>>> minCost;
+
+        // Compute shortest paths per length
+        for (auto &entry : byLen) {
+            int len = entry.first;
+            auto &idxs = entry.second;
+
+            unordered_map<string, int> id;
+            int cnt = 0;
+
+            for (int i : idxs) {
+                if (!id.count(original[i])) id[original[i]] = cnt++;
+                if (!id.count(changed[i]))  id[changed[i]]  = cnt++;
+            }
+
+            vector<vector<long long>> dist(cnt, vector<long long>(cnt, INF));
+            for (int i = 0; i < cnt; i++) dist[i][i] = 0;
+
+            for (int i : idxs) {
+                int u = id[original[i]];
+                int v = id[changed[i]];
+                dist[u][v] = min(dist[u][v], (long long)cost[i]);
+            }
+
+            // Floyd–Warshall
+            for (int k = 0; k < cnt; k++)
+                for (int i = 0; i < cnt; i++)
+                    for (int j = 0; j < cnt; j++)
+                        if (dist[i][k] + dist[k][j] < dist[i][j])
+                            dist[i][j] = dist[i][k] + dist[k][j];
+
+            for (auto &a : id)
+                for (auto &b : id) {
+                    long long d = dist[a.second][b.second];
+                    if (d < INF)
+                        minCost[len][a.first][b.first] = d;
+                }
+        }
+
+        // DP
+        vector<long long> dp(n + 1, INF);
+        dp[n] = 0;
+
+        for (int i = n - 1; i >= 0; i--) {
+            // No operation
+            if (source[i] == target[i]) {
+                dp[i] = dp[i + 1];
+            }
+
+            // Try all substring operations
+            for (auto &entry : minCost) {
+                int len = entry.first;
+                if (i + len > n) continue;
+
+                string s = source.substr(i, len);
+                string t = target.substr(i, len);
+
+                if (entry.second.count(s) &&
+                    entry.second[s].count(t)) {
+                    dp[i] = min(dp[i],
+                                entry.second[s][t] + dp[i + len]);
+                }
+            }
+        }
+        return dp[0] == INF ? -1 : dp[0];
+    }
+};

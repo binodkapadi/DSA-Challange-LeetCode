@@ -1,0 +1,25 @@
+SOLUTION ==>>
+
+class Solution {
+public:
+    bool isTrionic(vector<int>& nums) {
+        int n = nums.size();
+        int i = 1;
+
+        // Phase 1: increasing
+        while (i < n && nums[i] > nums[i-1]) i++;
+        if (i == 1) return false;  // no increasing
+
+        // Phase 2: decreasing
+        int startDec = i;
+        while (i < n && nums[i] < nums[i-1]) i++;
+        if (i == startDec) return false;  // no decreasing
+
+        // Phase 3: increasing
+        int startInc2 = i;
+        while (i < n && nums[i] > nums[i-1]) i++;
+        if (i == startInc2) return false;  // no second increasing
+
+        return i == n;
+    }
+};

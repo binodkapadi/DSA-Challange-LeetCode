@@ -1,0 +1,158 @@
+SOLUTION ===>>
+
+class LazySegTree {
+public:
+    int size;
+
+    struct Node {
+        int minVal, maxVal, lazy;
+    };
+
+    vector<Node> tree;
+
+    LazySegTree(const vector<int>& arr) {
+        size = arr.size();
+        tree.assign(4 * size, {INT_MAX, INT_MIN, 0});
+        build(1, 0, size - 1, arr);
+    }
+
+    void build(int node, int left, int right, const vector<int>& arr) {
+        if (left == right) {
+            tree[node].minVal = tree[node].maxVal = arr[left];
+            return;
+        }
+        int mid = (left + right) / 2;
+        build(node * 2, left, mid, arr);
+        build(node * 2 + 1, mid + 1, right, arr);
+        pull(node);
+    }
+
+    void pull(int node) {
+        tree[node].minVal =
+            min(tree[node * 2].minVal, tree[node * 2 + 1].minVal);
+        tree[node].maxVal =
+            max(tree[node * 2].maxVal, tree[node * 2 + 1].maxVal);
+    }
+
+    void applyAdd(int node, int delta) {
+        tree[node].minVal += delta;
+        tree[node].maxVal += delta;
+        tree[node].lazy += delta;
+    }
+
+    void push(int node) {
+        if (tree[node].lazy) {
+            applyAdd(node * 2, tree[node].lazy);
+            applyAdd(node * 2 + 1, tree[node].lazy);
+            tree[node].lazy = 0;
+        }
+    }
+
+    void addRange(int node, int left, int right, int ql, int qr, int delta) {
+        if (ql > right || qr < left)
+            return;
+
+        if (ql <= left && right <= qr) {
+            applyAdd(node, delta);
+            return;
+        }
+
+        push(node);
+
+        int mid = (left + right) / 2;
+        addRange(node * 2, left, mid, ql, qr, delta);
+        addRange(node * 2 + 1, mid + 1, right, ql, qr, delta);
+
+        pull(node);
+    }
+
+    void addRange(int l, int r, int delta) {
+        if (l <= r)
+            addRange(1, 0, size - 1, l, r, delta);
+    }
+
+    // find largest index where value == 0
+    int findRightmostZero(int node, int left, int right) {
+        if (tree[node].minVal > 0 || tree[node].maxVal < 0)
+            return -1;
+
+        if (left == right)
+            return left;
+
+        push(node);
+
+        int mid = (left + right) / 2;
+
+        int res = findRightmostZero(node * 2 + 1, mid + 1, right);
+        if (res != -1)
+            return res;
+
+        return findRightmostZero(node * 2, left, mid);
+    }
+
+    int findRightmostZero() {
+        return findRightmostZero(1, 0, size - 1);
+    }
+};
+
+
+class Solution {
+public:
+    int longestBalanced(vector<int>& nums) {
+        int n = nums.size();
+
+        unordered_map<int, int> lastIndex;
+        vector<int> nextOccurrence(n, n);
+
+        // compute next occurrence of each value
+        for (int i = n - 1; i >= 0; --i) {
+            if (lastIndex.count(nums[i]))
+                nextOccurrence[i] = lastIndex[nums[i]];
+            lastIndex[nums[i]] = i;
+        }
+
+        // build prefix balance
+        vector<int> prefixBalance(n, 0);
+        unordered_set<int> seen;
+
+        for (int i = 0; i < n; ++i) {
+            if (i)
+                prefixBalance[i] = prefixBalance[i - 1];
+
+            if (seen.count(nums[i]))
+                continue;
+
+            if (nums[i] % 2)
+                prefixBalance[i]++;   // odd
+            else
+                prefixBalance[i]--;   // even
+
+            seen.insert(nums[i]);
+        }
+
+        LazySegTree segTree(prefixBalance);
+
+        int maxLen = 0;
+
+        // initial window
+        int pos = segTree.findRightmostZero();
+        if (pos != -1)
+            maxLen = pos + 1;
+
+        // slide left pointer
+        for (int left = 1; left < n; ++left) {
+            int rightLimit = nextOccurrence[left - 1] - 1;
+
+            int delta = (nums[left - 1] % 2) ? -1 : 1;
+
+            segTree.addRange(0, rightLimit, delta);
+
+            int pos = segTree.findRightmostZero();
+
+            if (pos != -1)
+                maxLen = max(maxLen, pos - left + 1);
+        }
+
+        return maxLen;
+    }
+};

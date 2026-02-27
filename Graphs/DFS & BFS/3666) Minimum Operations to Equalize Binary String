@@ -1,0 +1,36 @@
+SOLUTION ===>>
+
+class Solution {
+public:
+    int minOperations(string s, int k) {
+        int n = s.length();
+        long long z = 0; 
+        for (char c : s) {
+            if (c == '0') z++;
+        }
+
+        if (z == 0) return 0;
+
+        long long o = n - z; 
+
+        for (int m = 1; m <= n; ++m) {
+            long long total_flips = (long long)m * k;
+
+            if (total_flips % 2 != z % 2) continue;
+
+            if (total_flips < z) continue;
+
+            long long max_capacity;
+            if (m % 2 == 0) {
+                max_capacity = (long long)n * m - z;
+            } else {
+                max_capacity = (long long)n * m - o;
+            }
+
+            if (total_flips <= max_capacity) {
+                return m;
+            }
+        }
+        return -1;
+    }
+};

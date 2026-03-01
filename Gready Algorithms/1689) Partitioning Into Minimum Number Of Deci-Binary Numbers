@@ -1,0 +1,17 @@
+SOLUTION ===>>>
+
+class Solution {
+public:
+    int minPartitions(string n) {
+        int maxDigit = 0;
+        
+        for(char c : n) {
+            maxDigit = max(maxDigit, c - '0');
+            
+            // Early stop if 9 found (can't go higher)
+            if(maxDigit == 9)
+                return 9;
+        }  
+        return maxDigit;
+    }
+};

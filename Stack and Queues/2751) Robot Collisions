@@ -1,0 +1,50 @@
+SOLUTION ==>>
+
+class Solution {
+public:
+    vector<int> survivedRobotsHealths(vector<int>& positions, vector<int>& healths, string directions) {
+        int n = positions.size();
+        vector<int> result(n, 0);
+        vector<tuple<int,int,int>> robots; // {position, health, index}
+
+        for (int i = 0; i < n; i++)
+            robots.push_back({positions[i], healths[i], i});
+
+        sort(robots.begin(), robots.end()); // Sort by position
+
+        stack<pair<int,int>> stk; // {health, index}
+
+        for (auto &[pos, health, idx] : robots) {
+            if (directions[idx] == 'R') {
+                stk.push({health, idx});
+            } else {
+                int cur_health = health;
+                while (!stk.empty() && cur_health > 0) {
+                    auto [r_health, r_idx] = stk.top();
+                    stk.pop();
+                    if (r_health > cur_health) {
+                        stk.push({r_health - 1, r_idx});
+                        cur_health = 0;
+                        break;
+                    } else if (r_health == cur_health) {
+                        cur_health = 0;
+                        break;
+                    } else {
+                        cur_health -= 1;
+                    }
+                }
+                if (cur_health > 0) result[idx] = cur_health;
+            }
+        }
+
+        while (!stk.empty()) {
+            auto [h, idx] = stk.top();
+            stk.pop();
+            result[idx] = h;
+        }
+
+        vector<int> ans;
+        for (int h : result) if (h > 0) ans.push_back(h);
+        return ans;
+    }
+};

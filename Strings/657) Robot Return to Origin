@@ -1,0 +1,41 @@
+SOLUTION ===>>
+
+APPROACH 1 =========>>
+
+class Solution {
+public:
+    bool judgeCircle(string moves) {
+        int x = 0, y = 0;
+
+        for(char c : moves){
+            if(c == 'U') x++;
+            else if(c == 'D') x--;
+            else if(c == 'L') y++;
+            else if(c == 'R') y--;
+        }
+        return (x == 0 && y == 0);
+    }
+};
+
+
+
+APPROACH 2 ============>>
+
+class Solution {
+public:
+    bool judgeCircle(string moves) {
+        int n = moves.length();
+        int x = 0, y = 0;
+
+        for(int i = 0; i < n; i++){
+            if(moves[i] == 'U') x++;
+            else if(moves[i] == 'D') x--;
+            else if(moves[i] == 'L') y++;
+            else if(moves[i] == 'R') y--;
+        }
+        return (x == 0 && y == 0);
+    }
+};
+
+
+IF THERE IS BOOL AS A MAIN FUNCTION RETURN (TRUE CONDITION) .

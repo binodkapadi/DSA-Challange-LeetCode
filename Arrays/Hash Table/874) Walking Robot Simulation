@@ -1,0 +1,38 @@
+SOLUTION ===>>
+
+class Solution {
+public:
+    int robotSim(vector<int>& commands, vector<vector<int>>& obstacles) {
+        int x=0, y=0;
+
+        vector<pair<int,int>> direct = {{0,1}, {1,0}, {0,-1}, {-1,0}};   // N,E,S,W
+        int d = 0; //Initially facing North
+        int res = 0;
+
+        set<pair<int,int>> obs;
+        for(auto &o : obstacles){
+            obs.insert({o[0], o[1]});
+        }
+
+        for(int c : commands){
+            if(c == -1){
+                d = (d + 1) % 4; //Since there are only four directions so we module direction by 4
+            }else if(c ==-2){
+                d = (d + 3) % 4;  //d=(d-1+4)%4 Adding +4 ensures the value is non-negative.
+            }else{
+                int dx = direct[d].first;
+                int dy = direct[d].second;
+
+                for(int i = 0; i < c; i++){
+                    if(obs.count({x+dx, y+dy})){
+                        break; //obstacle found
+                    }
+                    x += dx;
+                    y += dy;
+                }
+            }
+            res = max(res, x*x + y*y);
+        }
+        return res;
+    }
+};

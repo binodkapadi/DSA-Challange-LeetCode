@@ -1,0 +1,30 @@
+SOLUTION ==>>
+
+class Solution {
+public:
+    int M = 1e9 + 7;
+    int l,r,k,v;
+
+    int xorAfterQueries(vector<int>& nums, vector<vector<int>>& queries) {
+        for(auto q : queries){
+            l = q[0];
+            r = q[1];
+            k = q[2];
+            v = q[3];
+
+            while(l <= r){
+                nums[l] = (1LL * nums[l] * v) % M;
+                l += k;
+            }
+        }
+        int res = 0;
+        for(int &n : nums){  //&n means n is a reference to the actual element inside the array, not a copy.
+            res ^= n; //modifies original array
+        }
+        return res;
+    }
+};
+
+NOTE:
+=> Use reference (&) when you want to modify
+=> Use value (n) when you just need a copy

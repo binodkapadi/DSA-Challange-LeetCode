@@ -1,0 +1,26 @@
+SOLUTION ==>>
+
+
+class Solution {
+public:
+    int minimumDistance(vector<int>& nums) {
+        int dis = INT_MAX;
+        int n = nums.size();
+
+        for(int i = 0; i < n-2; i++){
+            for(int j = i+1; j < n-1; j++){
+                if(nums[i] != nums[j])  continue;
+                for(int k = j+1; k < n; k++){
+                    if(nums[j] == nums[k]){
+                        int ans = 2 * (k-i);  //For i=0,j=2,k=3 index [abs(0-2) + abs(2-3) + abs(3-0) = 6, so if we simply calculate using [res = 2*(k-i) = 2*(3-0) = 6]]
+                        dis = min(dis, ans);
+                        break;
+                    }
+                }
+            }
+        }
+        return dis == INT_MAX ? -1 : dis;
+    }
+}; 
+
+//Bruteforce Approach

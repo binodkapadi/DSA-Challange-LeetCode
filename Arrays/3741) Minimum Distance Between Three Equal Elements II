@@ -1,5 +1,34 @@
 SOLUTION ==>>
 
+
+class Solution {
+public:
+    int minimumDistance(vector<int>& nums) {
+        int n = nums.size();
+        unordered_map<int, vector<int>> mp;
+        int ans = INT_MAX;
+
+        // Store indices
+        for (int k = 0; k < n; k++) {
+            mp[nums[k]].push_back(k);
+          
+            //if the map size is greater than or equal to 3 then only we procees further.
+            if(mp[nums[k]].size() >= 3){
+                vector<int> &vect = mp[nums[k]];
+                int size = vect.size();
+                int i = vect[size - 3];
+
+                ans = min(ans, 2*(k-i));
+            }
+        }
+
+        return ans == INT_MAX ? -1:ans;
+    }
+};
+
+
+====================APPROACH [2] ===============
+
 class Solution {
 public:
     int minimumDistance(vector<int>& nums) {

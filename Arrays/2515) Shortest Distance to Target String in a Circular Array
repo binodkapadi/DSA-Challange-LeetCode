@@ -1,0 +1,20 @@
+SOLUTION ==>>
+
+class Solution {
+public:
+    int closestTarget(vector<string>& words, string target, int startIndex) {
+        int n = words.size();
+
+        int res = INT_MAX;
+
+        for(int i = 0; i < n; i++){
+            if(words[i] == target){
+                int fd = abs(i - startIndex); //This is the Straight Distance
+                int bk = (n - fd);    //This is the circular distance to that element
+
+                res = min({res, fd, bk});
+            }
+        }
+        return res == INT_MAX ? -1 : res;
+    }
+};

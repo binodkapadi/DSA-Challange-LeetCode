@@ -1,5 +1,55 @@
 SOLUTION ===>>
 
+---------------APPROACH-1[MAP]-----------------------
+
+class Solution {
+public:
+    vector<int> solveQueries(vector<int>& nums, vector<int>& queries) {
+        int n = nums.size();
+        unordered_map<int, vector<int>> index;//To see how which index the number in the nums present.
+
+        for(int i =0; i <n; i++){
+            index[nums[i]].push_back(i);
+        }
+        
+        vector<int> result;
+        for(int& qi : queries){
+            int elem = nums[qi];
+            vector<int>& vec = index[elem];
+
+            int sz = vec.size();
+            if(sz == 1){
+                result.push_back(-1);
+                continue;
+            }
+
+            //Position of the element
+            int pos = lower_bound(begin(vec), end(vec),qi) - begin(vec);
+            int res = INT_MAX;
+
+            //Forward Distance 
+            int right = vec[(pos+1) % sz];
+            int d = abs(qi - right);  // straight forward Distance
+            int circularDis = n - d;
+
+            res = min({res, d, circularDis});
+
+            //Backward Distance 
+            int left = vec[(pos - 1 + sz) % sz];
+            d = abs(qi - left);  // straight backward Distance
+            circularDis = n - d;
+
+            res = min({res, d, circularDis});
+
+            result.push_back(res);
+        }
+        return result;
+    }
+};
+
+
+---------------APPROACH-1------------------------
+
 class Solution {
 public:
     vector<int> solveQueries(vector<int>& nums, vector<int>& queries) {

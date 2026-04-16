@@ -1,5 +1,61 @@
 SOLUTION ===>>
 
+//Approach-1 (Recursion + Memo with 3-D Memoization DP)
+//T.C : O(n*27*27) ~= O(n)
+//S.C : O(n*27*27) ~= O(n)
+
+class Solution {
+public:
+    int dp[301][27][27];
+
+    int getDist(int pos1, int pos2) {
+        int x1 = pos1 / 6, y1 = pos1 % 6;
+        int x2 = pos2 / 6, y2 = pos2 % 6;
+
+        return abs(x1 - x2) + abs(y1 - y2);
+    }
+
+    int solve(string &word, int i, int f1, int f2) {
+        if (i >= word.length())
+            return 0;
+
+        int curr = word[i] - 'A';
+
+        if (dp[i][f1][f2] != -1)
+            return dp[i][f1][f2];
+
+        //None of the finger used
+        if(f1 == 26 && f2 == 26){
+            return dp[i][f1][f2] = solve(word, i+1,curr, f2);
+        }
+
+        //Finger f2 is not used
+        if(f2 == 26){
+            int moveF2 = solve(word, i+1, f1, curr);
+            int moveF1 = getDist(f1, curr) + solve(word, i+1, curr, f2);
+
+            return dp[i][f1][f2]= min(moveF1, moveF2);
+        }
+
+        // Both of the finger are used
+        int moveF1 = getDist(f1, curr) + solve(word, i + 1, curr, f2);
+        int moveF2 = getDist(f2, curr) + solve(word, i + 1, f1, curr);
+
+        return dp[i][f1][f2]= min(moveF1, moveF2);
+    }
+
+    int minimumDistance(string word) {
+        //finger1 = value of character
+        //finger2 = value of character
+        memset(dp, -1, sizeof(dp));
+        return solve(word, 0, 26, 26);
+    }
+};
+
+
+
+//Approach-2 (Recursion + Memo with 3-D Memoization DP, but with less call)
+
 class Solution {
 public:
     int dp[301][27][27];

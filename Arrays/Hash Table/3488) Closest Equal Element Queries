@@ -1,0 +1,39 @@
+SOLUTION ===>>
+
+class Solution {
+public:
+    vector<int> solveQueries(vector<int>& nums, vector<int>& queries) {
+        int n = nums.size();
+        unordered_map<int, vector<int>> index;//To see how which index the number in the nums present.
+
+        for(int i =0; i <n; i++){
+            index[nums[i]].push_back(i);
+        }
+        
+        vector<int> minDis(n, INT_MAX);
+        for(auto& pair : index){
+            auto& arr = pair.second;
+            int m = arr.size();
+
+            if(m == 1){
+                minDis[arr[0]] = -1;
+                continue;
+            }
+            for(int i =0; i < m; i++){
+                int fd = arr[(i + 1) % m];
+                int bk = arr[(i-1+m) % m];
+                int curr = arr[i];
+
+                int disback = min(abs(curr - bk), n- abs(curr - bk));
+                int disfd = min(abs(curr - fd), n- abs(curr - fd));
+
+                minDis[curr] = min(disfd, disback);
+            }
+        }
+        vector<int> res;
+        for(auto& query: queries){
+            res.push_back(minDis[query]);
+        }
+        return res;
+    }
+};

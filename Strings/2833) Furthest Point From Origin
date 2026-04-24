@@ -1,0 +1,53 @@
+SOLUTION ==>>
+
+class Solution {
+public:
+    int furthestDistanceFromOrigin(string moves) {
+        int n = moves.length();
+        int Left = 0, Right = 0, dash = 0;
+        int dis;
+
+        for(int i = 0; i < n; i++){
+            if(moves[i] == 'L'){
+                Left++;
+            }
+            else if(moves[i] == 'R'){
+                Right++;
+            }
+            else{
+                dash++;
+            }
+        }
+        dis = abs(Left - Right) + dash;
+
+        return dis;
+    }
+};
+
+
+
+
+--------------------------------------------------------------------------------------------------------------------------
+
+class Solution {
+public:
+    int furthestDistanceFromOrigin(string moves) {
+        int Left = 0, Right = 0, dash = 0;
+        int dis;
+
+        for(char &ch : moves){
+            if(ch == 'L'){
+                Left++;
+            }
+            else if(ch == 'R'){
+                Right++;
+            }
+            else{
+                dash++;
+            }
+        }
+        dis = abs(Left - Right) + dash;
+
+        return dis;
+    }
+};

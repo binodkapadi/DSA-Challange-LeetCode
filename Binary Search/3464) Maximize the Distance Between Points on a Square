@@ -1,0 +1,64 @@
+SOLUTION ==>>
+
+
+class Solution {
+public:
+    int maxDistance(int side, vector<vector<int>>& points, int k) {
+        int n = points.size();
+        vector<long long> pos;
+
+        // Convert to 1D perimeter positions
+        for (auto &p : points) {
+            int x = p[0], y = p[1];
+            if (y == 0) pos.push_back(x);
+            else if (x == side) pos.push_back(side + y);
+            else if (y == side) pos.push_back(2LL * side + (side - x));
+            else pos.push_back(3LL * side + (side - y));
+        }
+
+        sort(pos.begin(), pos.end());
+
+        long long per = 4LL * side;
+
+        // Extend for circular handling
+        vector<long long> ext = pos;
+        for (auto p : pos) ext.push_back(p + per);
+
+        // Check using binary search jumps
+        auto can = [&](long long d) {
+            for (int i = 0; i < n; i++) {
+                int cnt = 1;
+                long long last = ext[i];
+                int idx = i;
+
+                while (cnt < k) {
+                    // Find next valid point
+                    auto it = lower_bound(ext.begin() + idx + 1, ext.begin() + i + n, last + d);
+                    if (it == ext.begin() + i + n) break;
+
+                    idx = it - ext.begin();
+                    last = *it;
+                    cnt++;
+                }
+
+                if (cnt == k && last - ext[i] <= per - d)
+                    return true;
+            }
+            return false;
+        };
+
+        long long low = 0, high = per, ans = 0;
+
+        while (low <= high) {
+            long long mid = (low + high) / 2;
+            if (can(mid)) {
+                ans = mid;
+                low = mid + 1;
+            } else {
+                high = mid - 1;
+            }
+        }
+
+        return ans;
+    }
+};

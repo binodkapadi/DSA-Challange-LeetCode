@@ -1,0 +1,115 @@
+SOLUTION ====>>>
+
+
+---------------------APPROACH 1[UISNG DFS + RECURSION] --------------------------------
+
+class Solution {
+public:
+    int m, n;
+     
+    vector<vector<int>> direction = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+
+    bool cycleFindDFS(int i, int j, int prev_i, int prev_j, vector<vector<char>>& grid, vector<vector<bool>>& visited){
+        if(visited[i][j]){
+            return true;
+        }
+
+        visited[i][j] = true;
+
+        //explore neighbours
+        for(auto& dir : direction){
+            int new_i = i + dir[0];
+            int new_j = j + dir[1];
+
+            if(new_i >= 0 && new_i < m && new_j >= 0 && new_j < n && grid[new_i][new_j] == grid[i][j]){
+                if(new_i == prev_i && new_j == prev_j){
+                    continue;
+                }
+
+                if(cycleFindDFS(new_i, new_j, i, j, grid, visited)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    bool containsCycle(vector<vector<char>>& grid) {
+        m = grid.size();
+        n = grid[0].size();
+
+        vector<vector<bool>> visited(m, vector<bool>(n, false));
+
+        for(int i = 0; i < m; i++){
+            for(int j = 0; j < n; j++){
+                if(!visited[i][j] && cycleFindDFS(i, j, -1, -1, grid, visited)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+};
+
+
+--------------------------APPROACH 2[USING BFS + RECURSION]-----------------------------
+
+
+class Solution {
+public:
+    int m, n;
+    vector<vector<int>> directions = {{1, 0}, {-1, 0}, {0, -1}, {0, 1}};
+
+    bool cycleDetectBFS(int r, int c, vector<vector<char>>& grid, vector<vector<bool>>& visited) {
+        //r, c, prev_r, prev_c
+        queue<tuple<int, int, int, int>> que;
+
+        que.push({r, c, -1, -1});
+        visited[r][c] = true;
+
+        while(!que.empty()) {
+            auto [curr_r, curr_c, prev_r, prev_c] = que.front();
+            que.pop();
+
+            //explore neighbours
+            for(auto &dir : directions) {
+                int new_r = curr_r + dir[0];
+                int new_c = curr_c + dir[1];
+
+                if(new_r >= 0 && new_r < m && new_c >= 0 && new_c < n
+                && grid[new_r][new_c] == grid[curr_r][curr_c]) {
+                    
+                    if(new_r == prev_r && new_c == prev_c)
+                        continue;
+                    
+                    if(visited[new_r][new_c])
+                        return true;
+                    
+                    visited[new_r][new_c] = true;
+
+                    que.push({new_r, new_c, curr_r, curr_c});
+                }
+
+            }
+        }
+
+        return false;
+    }
+
+    bool containsCycle(vector<vector<char>>& grid) {
+        m = grid.size();
+        n = grid[0].size();
+
+        vector<vector<bool>> visited(m, vector<bool>(n, false));
+
+        for(int i = 0; i < m; i++) {
+            for(int j = 0; j < n; j++) {
+                if(!visited[i][j] && cycleDetectBFS(i, j, grid, visited)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+};

@@ -1,0 +1,138 @@
+SOLUTION ==>>
+
+-------------APPROACH 1[BRUTE FORCE]-----------------------
+class Solution {
+public:
+    
+    bool isGood(int num){
+        bool changed = false;
+        while(num > 0){
+            int d = num % 10;
+            if(d == 3 || d == 4 || d == 7)   return false;
+
+            if(d == 2 || d == 5 || d == 6 || d == 9)  changed = true;
+
+            num /= 10;
+        }
+        return changed;
+    }
+    int rotatedDigits(int n) {
+        int count = 0;
+        for(int i = 1; i <= n; i++){
+            if(isGood(i)){
+                count++;
+            }
+        }
+        return count;
+    }
+};
+
+
+TC = O(N * LOG(N))
+SC = O(1)
+
+
+--------------APPROACH 2 [Recursion Memoization]-------------------------------
+
+class Solution {
+public:
+    vector<int> t;
+
+    int solve(int num) {
+        if(t[num] != -1)
+            return t[num];
+
+        if(num == 0)
+            return t[num] = 0;
+        
+        int remain = solve(num/10);
+        if(remain == 2)
+            return t[num] = 2;
+
+        int digit_check;
+        int d = num%10;
+
+        if (d == 0 || d == 1 || d == 8) 
+            digit_check = 0;       // same
+        else if (d == 2 || d == 5 || d == 6 || d == 9) 
+            digit_check = 1;       // good
+        else 
+            return t[num] = 2;     // invalid
+
+
+        if(remain == 0 && digit_check == 0) {
+            return t[num] = 0;
+        }
+
+        return t[num] = 1;
+        
+    }
+
+    int rotatedDigits(int n) {
+        int count = 0;
+        t.resize(n+1, -1);
+
+        //0 : same
+        //1 : Good
+        //2 : invalid
+        for(int i = 1; i <= n; i++) {
+            if(solve(i) == 1) {
+                count++;
+            }
+        }
+
+        return count;
+    }
+};
+
+
+TC : O(n)
+SC : O(n)
+
+--------------APPROACH 3 [ Bottom Up ]--------------------
+
+class Solution {
+public:
+    int rotatedDigits(int n) {
+        vector<int> t(n+1, -1);
+
+        t[0] = 0;
+        int count= 0;
+
+        for(int i = 1; i <= n; i++) {
+            int remain = t[i/10]; //solve(num/10)
+
+            if(remain == 2) {
+                t[i] = 2;
+                continue;
+            }
+
+            int d = i%10;
+            int digit_check;
+
+            if (d == 0 || d == 1 || d == 8) 
+                digit_check = 0;       // same
+            else if (d == 2 || d == 5 || d == 6 || d == 9) 
+                digit_check = 1;       // good
+            else {
+                t[i] = 2;              // invalid
+                continue;
+            }
+
+            if(remain == 0 && digit_check == 0)
+                t[i] = 0;
+            else
+                t[i] = 1;
+
+            if(t[i] == 1) {
+                count++;
+            }
+        }
+
+        return count;
+    }
+};
+
+
+TC : O(n)
+SC : O(n)

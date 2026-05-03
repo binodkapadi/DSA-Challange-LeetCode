@@ -1,5 +1,8 @@
 SOLUTION ==>>
 
+
+--------------APPROACH 1[BRUTEFORCE APPROACH]------------------------------
+
 class Solution {
 public:
     bool rotateString(string s, string goal) {
@@ -16,3 +19,29 @@ public:
         return false;
     }
 };
+
+TC = O(n^2)
+SC = O(1)
+
+---------------------APPROACH 2[OPTIMIZED APPROACH]------------------------------
+
+class Solution {
+public:
+    bool rotateString(string s, string goal) {
+        int n = s.length();
+        int m = goal.length();
+        
+        if(n != m)   return false;  //if length of both string is diffrent
+
+        string str = s + s; //Doubled the string after rotation all string are present in str.
+        
+        //Finding the goal in doubled string
+        if(str.find(goal) != -1){
+            return true;
+        }
+        return false;
+    }
+};
+
+TC = O(n)
+SC = o(n)

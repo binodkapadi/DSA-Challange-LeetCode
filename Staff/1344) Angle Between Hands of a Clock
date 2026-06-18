@@ -1,0 +1,16 @@
+SOLUTION ===>>>
+
+class Solution {
+public:
+    double angleClock(int hour, int minutes) {
+        if (hour == 12)  hour= 0;
+
+        float HourAngle = (hour * 30 + minutes * 0.5);
+        float MinuteAngle = minutes * 6;
+        float Angle = abs(HourAngle - MinuteAngle);
+
+        Angle = min(Angle , 360 - Angle);  
+
+        return Angle;
+    }
+};

@@ -1,0 +1,16 @@
+SOLUTION ===>>
+
+class Solution {
+public:
+    int largestAltitude(vector<int>& gain) {
+        int max_height=0;
+        int curr_height=0;
+        for(auto it : gain){
+            curr_height+=it;
+            if(curr_height>max_height){
+                max_height=curr_height;
+            }
+        }
+        return max_height;   
+    }
+};

@@ -1,0 +1,42 @@
+SOLUTION ===>>>
+
+-----------------------------------------------------------
+
+class Solution {
+public:
+    int maxBuilding(int n, vector<vector<int>>& restrictions) {
+        // Add boundary conditions to restrictions
+        restrictions.push_back({1, 0});
+        restrictions.push_back({n, n - 1});
+        
+        // Sort restrictions based on building index
+        sort(restrictions.begin(), restrictions.end(), [](const vector<int>& a, const vector<int>& b) {
+            return a[0] < b[0];
+        });
+        
+        int len = restrictions.size();
+        
+        // Left-to-right pass
+        for (int i = 1; i < len; i++) {
+            restrictions[i][1] = min(restrictions[i][1], restrictions[i - 1][1] + restrictions[i][0] - restrictions[i - 1][0]);
+        }
+        
+        // Right-to-left pass
+        for (int i = len - 2; i >= 0; i--) {
+            restrictions[i][1] = min(restrictions[i][1], restrictions[i + 1][1] + restrictions[i + 1][0] - restrictions[i][0]);
+        }
+        
+        // Compute maximum peak height between adjacent restricted buildings
+        int max_height = 0;
+        for (int i = 1; i < len; i++) {
+            int peak = restrictions[i - 1][1] + (restrictions[i][0] - restrictions[i - 1][0] + restrictions[i][1] - restrictions[i - 1][1]) / 2;
+            max_height = max(max_height, peak);
+        }   
+        return max_height;
+    }
+};
+
+------------------------------------------------------------------------------------
+
+TIME COMPLEXITY : O(n log n)
+SPACE COMPLEXITY : O(n)

@@ -1,0 +1,32 @@
+SOLUTION ===>>
+
+
+class Solution {
+public:
+    int rearrangeCharacters(string s, string target) {
+        vector <int> s_freq(26,0);
+        vector <int> t_freq(26,0);
+
+        int n = target.size();
+
+        int result = INT_MAX;
+ 
+        //counting the frequency of the character in the source string
+        for(char ch : s){
+            s_freq[ch - 'a']++;
+        }
+
+        //counting the frequency of the character in the target string
+        for(char ch : target){
+            t_freq[ch - 'a']++;
+        }
+
+        for(int i = 0; i < n;i++){
+            int idx = target[i] -'a';
+
+            result = min({ result, s_freq[idx]/t_freq[idx]});
+        }
+
+        return result == INT_MAX ? 0 : result;
+    }
+};

@@ -1,0 +1,55 @@
+SOLUTION ==>>
+
+
+#define ll long long int
+#define mod 1000000007
+class Solution {
+public:
+    int zigZagArrays(int n, int l, int r) {
+
+        ll m = r - l + 1;
+        if (n == 1)
+        {
+            return (m % mod);
+        }
+
+        vector<ll>up(m + 1, 0);
+        vector<ll>down(m + 1, 0);
+
+        for (int v = 1; v <= m; v++) {
+            up[v] = v - 1;
+            down[v] = m - v;
+        }
+
+        for (int len = 3; len <= n; len++) 
+        {
+            vector<ll>newUp(m + 1, 0);
+            vector<ll>newDown(m + 1, 0);
+
+            ll pref = 0;
+            for (int v = 1; v <= m; v++) 
+            {
+                newUp[v] = pref;
+                pref = (pref + down[v]) % mod;
+            }
+
+            long long suff = 0;
+            for (int v = m; v >= 1; v--) 
+            {
+                newDown[v] = suff;
+                suff = (suff + up[v]) % mod;
+            }
+
+            up=newUp;
+            down=newDown;
+        }
+
+        ll ans = 0;
+        for (int v = 1; v <= m; v++) 
+        {
+            ans = (ans + up[v] + down[v]) % mod;
+        }
+
+        return ans;
+    }
+};

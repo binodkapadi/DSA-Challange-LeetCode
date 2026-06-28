@@ -1,53 +1,44 @@
 SOLUTION ==>>
 
-
 class Solution {
 public:
-    int maximumLength(std::vector<int>& nums) {
-        std::unordered_map<int, int> count;
-        for (int num : nums) {
-            count[num]++;
+    typedef long long ll;
+
+    int maximumLength(vector<int>& nums) {
+        unordered_map<ll, int> mp;
+
+        for(int &num : nums) {
+            mp[num]++;
         }
-        
-        int max_len = 1;
-        
-        // Handle the special case for 1
-        if (count.find(1) != count.end()) {
-            int ones = count[1];
-            if (ones % 2 == 0) {
-                ones--;
-            }
-            max_len = std::max(max_len, ones);
+
+        int result = 0;
+
+        if(mp[1]%2) { //Odd
+            result = mp[1];
+        } else { //even
+            result = mp[1]-1;
         }
-        
-        // Handle all other numbers
-        for (const auto& [x, freq] : count) {
-            if (x == 1) continue;
-            
-            int currentLen = 0;
-            long long curr = x;
-            
-            // Use find() to avoid inserting elements into the map during iteration
-            while (curr <= 1000000000LL) {
-                auto it = count.find(curr);
-                if (it != count.end() && it->second >= 2) {
-                    currentLen += 2;
-                    curr = curr * curr;
-                } else {
-                    break;
-                }
+
+        for(auto &[num, _] : mp) {
+            if(num == 1) continue;
+
+            ll curr = num;
+            int len = 0;
+
+            while(mp.count(curr) && mp[curr] > 1) {
+                len += 2;
+                curr = curr*curr;
             }
-            
-            auto it = count.find(curr);
-            if (curr <= 1000000000LL && it != count.end() && it->second > 0) {
-                currentLen += 1;
+
+            if(mp.count(curr) == 1) {
+                len += 1;
             } else {
-                currentLen -= 1;
+                len -= 1;
             }
-            
-            max_len = std::max(max_len, currentLen);
+
+            result = max(result, len);
         }
-        
-        return max_len;
+
+        return result;
     }
 };

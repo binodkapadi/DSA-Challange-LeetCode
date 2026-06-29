@@ -1,0 +1,20 @@
+SOLUTION ==>>
+
+
+class Solution {
+public:
+    int numOfStrings(vector<string>& patterns, string word) {
+        int count = 0;
+
+        for(auto &wd : patterns){
+            // if(word.find(wd) != string::npos){
+            //     count++;
+            // }
+
+            if(word.contains(wd)){
+                count++;
+            }
+        }
+        return count;
+    }
+};

@@ -1,0 +1,31 @@
+SOLUTION ===>>>
+
+
+class Solution {
+public:
+    int numberOfSubstrings(string s) {
+        int n = s.length();
+
+        int result = 0;
+
+        // 0 -> a, 1 -> b, 2 -> c
+        vector<int> mp(3,0);
+
+        int i = 0;
+        int j = 0;
+
+        while(j < n){
+            char ch = s[j];
+            mp[ch - 'a']++; //it will give the index  ch - 'a';
+
+            while(mp[0] > 0 && mp[1] > 0 && mp[2] > 0){
+                result += (n - j);
+
+                mp[s[i] -'a']--;
+                i++;
+            }
+            j++;
+        }
+        return result;
+    }
+};

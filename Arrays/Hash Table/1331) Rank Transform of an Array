@@ -1,0 +1,31 @@
+SOLUTION ===>>>
+
+
+class Solution {
+public:
+    vector<int> arrayRankTransform(vector<int>& arr) {
+        int n = arr.size();
+
+        if(n == 0){
+            return {};
+        }
+
+        //To store unique elements in sorted order (set)
+        set<int> UniqueElements(begin(arr), end(arr));
+
+        unordered_map<int, int> ranks;
+        int rank = 1;
+
+        for(auto &ele: UniqueElements){
+            ranks[ele] = rank++;
+        }
+
+        vector<int> result;
+
+        for(int &ele: arr){
+            result.push_back(ranks[ele]);
+        }
+        
+        return result;
+    }
+};

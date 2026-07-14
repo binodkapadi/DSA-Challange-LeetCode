@@ -1,0 +1,39 @@
+SOLUTION ===>>>
+
+
+class Solution {
+    int MOD = 1e9+7;
+    int t[201][201][201];
+public:
+    int solve(vector<int>& nums, int i, int first, int second){
+
+        if(i == nums.size()){
+            return (first != 0 && second != 0 && first == second);
+        }
+
+        if(t[i][first][second] != -1){
+            return t[i][first][second];
+        }
+        
+        long long ans = 0;
+
+        //skip
+        ans += solve(nums, i+1, first, second);
+        
+        //Put in first subsequences
+        ans += solve(nums, i+1, __gcd(first, nums[i]), second);
+        
+        //put in second subsequences
+        ans += solve(nums, i+1, first, __gcd(second, nums[i]));
+
+        return t[i][first][second] = ans % MOD;
+    }
+
+    int subsequencePairCount(vector<int>& nums) {
+
+        memset(t, -1, sizeof(t));
+
+        return solve(nums, 0, 0, 0);
+        
+    }
+};

@@ -1,0 +1,92 @@
+SOLUTION ===>>
+
+
+--------------APPROACH 1 [BRUTFORCE APPROACH] ---------------------
+
+class Solution {
+public:
+    vector<int> gcdValues(vector<int>& nums, vector<long long>& queries) {
+
+        int n = nums.size();
+
+        vector<int> gcdPairs;
+
+        for(int i = 0; i < n; i++){
+            for (int j = i + 1; j < n; j++) {
+                gcdPairs.push_back(__gcd(nums[i], nums[j]));
+            }    
+        }
+
+        sort(begin(gcdPairs), end(gcdPairs));
+
+        vector<int> ans;
+
+        for(int i = 0; i < queries.size(); i++){
+            ans.push_back(gcdPairs[queries[i]]);
+        }
+        return ans;
+    }
+};
+
+
+IT WILL PASSES SOME OF TEST CASE'S AND WHILE SUBMITTING GIVE'S  [MEMORY LIMTI EXCEEDED]  BEACUSE WE HAVE TO STORE (n*(n_1)/2) SOLUTION WHICH IS 5 Billion ACCORDING TO CONSTRAINTS SO WHICH NOT POSSIBLE.
+
+
+
+-------------APPROACH 2 [USING FREQUENCY COUNT AND BINARY SEARCH] [IMPROVED SOLUTION] ---------------------------
+
+
+class Solution {
+public:
+    vector<int> gcdValues(vector<int>& nums, vector<long long>& queries) {
+        int mx = *max_element(nums.begin(), nums.end());
+
+        // Frequency of each value
+        vector<long long> count(mx + 1, 0);
+        for (int num : nums)
+            count[num]++;
+
+        // gcdPairs[i] = number of pairs whose gcd is exactly i
+        vector<long long> gcdPairs(mx + 1, 0);
+
+        // Count pairs whose gcd is a multiple of i
+        for (int i = 1; i <= mx; i++) {
+            long long cnt = 0;
+            for (int j = i; j <= mx; j += i)
+                cnt += count[j];
+
+            gcdPairs[i] = cnt * (cnt - 1) / 2;
+        }
+
+        // Inclusion-Exclusion
+        for (int i = mx; i >= 1; i--) {
+            for (int j = 2 * i; j <= mx; j += i)
+                gcdPairs[i] -= gcdPairs[j];
+        }
+
+        // Prefix sum
+        vector<long long> prefix(mx + 1, 0);
+        for (int i = 1; i <= mx; i++)
+            prefix[i] = prefix[i - 1] + gcdPairs[i];
+
+        vector<int> ans;
+
+        for (long long q : queries) {
+            long long k = q + 1;   // convert to 1-based rank
+
+            int left = 1, right = mx;
+            while (left < right) {
+                int mid = left + (right - left) / 2;
+
+                if (prefix[mid] >= k)
+                    right = mid;
+                else
+                    left = mid + 1;
+            }
+
+            ans.push_back(left);
+        }
+
+        return ans;
+    }
+};

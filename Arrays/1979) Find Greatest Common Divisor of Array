@@ -1,0 +1,16 @@
+SOLUTION ==>>
+
+
+class Solution {
+public:
+    int findGCD(vector<int>& nums) {
+        int n = nums.size();
+
+        sort(begin(nums), end(nums));
+
+        int l = 0;
+        int r = n-1;
+
+        return __gcd(nums[l], nums[r]);   
+    }
+};

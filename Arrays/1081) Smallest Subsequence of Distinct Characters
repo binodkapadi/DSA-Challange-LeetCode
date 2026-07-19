@@ -1,0 +1,89 @@
+SOLUTION ===>>
+
+
+--------------APPROACH 1 [USING ARRAY]--------------------
+
+class Solution {
+public:
+    string smallestSubsequence(string s) {
+
+        int n = s.length();
+
+        string result;
+
+        vector<bool> taken(26, false);
+        vector<int> lastIdx(26);
+
+        for(int i = 0; i < n; i++){
+            char ch = s[i];
+
+            lastIdx[ch -'a'] = i;
+        }
+
+        for(int i = 0; i < n; i++){
+            char ch = s[i];
+
+            int idx = ch - 'a';
+
+            if(taken[idx] == true)
+                continue;
+
+            while(result.length() > 0 && result.back() > ch && lastIdx[result.back() - 'a'] > i){
+                taken[result.back() - 'a'] = false;
+                result.pop_back();
+            }
+            result.push_back(ch);
+            taken[idx] = true;
+        }
+        return result;
+    }
+};
+
+
+
+
+--------------------APPROACH 2 [USING STACK] -----------------------------
+
+class Solution {
+public:
+    string removeDuplicateLetters(string s) {
+        int n = s.length();
+        stack<char> st;
+        
+        vector<bool> taken(26, false);
+        vector<int> lastIndex(26);
+        
+        for(int i = 0; i < n; i++) {
+            char ch = s[i];
+            
+            lastIndex[ch-'a'] = i;
+        }
+        
+        
+        for(int i = 0; i < n; i++) {
+            
+            int idx = s[i] - 'a';
+            
+            if(taken[idx] == true) continue;
+            
+            while(!st.empty()  && s[i] < st.top() && lastIndex[st.top() - 'a'] > i) {
+                taken[st.top() - 'a'] = false;
+                st.pop();
+            }
+            
+            st.push(s[i]);
+            taken[idx] = true;
+            
+        }
+        
+        string result;
+        while(!st.empty()) {
+            result.push_back(st.top());
+            st.pop();
+        }
+        
+        reverse(begin(result), end(result));
+        
+        return result;
+    }
+};

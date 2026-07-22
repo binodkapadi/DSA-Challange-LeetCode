@@ -1,0 +1,122 @@
+SOLUTION ===>>
+
+class SegmentTree {
+public:
+    int n;
+    vector<int> tree;
+
+    SegmentTree(const vector<int>& values) {
+        n = values.size();
+        tree.assign(4 * max(1, n), 0);
+
+        if (n > 0)
+            build(1, 0, n - 1, values);
+    }
+
+    void build(int node, int left, int right, const vector<int>& values) {
+        if (left == right) {
+            tree[node] = values[left];
+            return;
+        }
+
+        int mid = (left + right) / 2;
+        build(node * 2, left, mid, values);
+        build(node * 2 + 1, mid + 1, right, values);
+        tree[node] = max(tree[node * 2], tree[node * 2 + 1]);
+    }
+
+    int query(int ql, int qr) {
+        if (ql > qr || n == 0)
+            return 0;
+        return queryUtil(1, 0, n - 1, ql, qr);
+    }
+
+    int queryUtil(int node, int left, int right, int ql, int qr) {
+        if (ql <= left && right <= qr)
+            return tree[node];
+
+        int mid = (left + right) / 2;
+        int ans = 0;
+
+        if (ql <= mid)
+            ans = max(ans, queryUtil(node * 2, left, mid, ql, qr));
+
+        if (qr > mid)
+            ans = max(ans, queryUtil(node * 2 + 1, mid + 1, right, ql, qr));
+
+        return ans;
+    }
+};
+
+class Solution {
+public:
+    vector<int> maxActiveSectionsAfterTrade(string s, vector<vector<int>>& queries) {
+
+        int n = s.length();
+        int originalOnes = 0;
+
+        for (char c : s)
+            if (c == '1')
+                originalOnes++;
+
+        vector<int> zeroLengths;
+        vector<int> zeroStarts;
+        vector<int> zeroEnds;
+
+        int idx = 0;
+        while (idx < n) {
+            int start = idx;
+            while (idx < n && s[idx] == s[start])
+                idx++;
+
+            if (s[start] == '0') {
+                zeroLengths.push_back(idx - start);
+                zeroStarts.push_back(start);
+                zeroEnds.push_back(idx - 1);
+            }
+        }
+
+        int zeroCount = zeroLengths.size();
+
+        if (zeroCount < 2)
+            return vector<int>(queries.size(), originalOnes);
+
+        vector<int> gains;
+        for (int i = 0; i + 1 < zeroCount; i++)
+            gains.push_back(zeroLengths[i] + zeroLengths[i + 1]);
+
+        SegmentTree seg(gains);
+
+        vector<int> ans;
+
+        for (auto &q : queries) {
+            int left = q[0];
+            int right = q[1];
+
+            int firstBlock = lower_bound(zeroEnds.begin(), zeroEnds.end(), left) - zeroEnds.begin();
+            int lastBlock = upper_bound(zeroStarts.begin(), zeroStarts.end(), right) - zeroStarts.begin() - 1;
+
+            if (firstBlock >= zeroCount || lastBlock < 0 || firstBlock >= lastBlock) {
+                ans.push_back(originalOnes);
+                continue;
+            }
+
+            int firstLength = zeroEnds[firstBlock] - max(zeroStarts[firstBlock], left) + 1;
+            int lastLength = min(zeroEnds[lastBlock], right) - zeroStarts[lastBlock] + 1;
+
+            if (firstBlock + 1 == lastBlock) {
+                ans.push_back(originalOnes + firstLength + lastLength);
+                continue;
+            }
+
+            int leftBoundaryGain = firstLength + zeroLengths[firstBlock + 1];
+            int rightBoundaryGain = zeroLengths[lastBlock - 1] + lastLength;
+            int internalGain = seg.query(firstBlock + 1, lastBlock - 2);
+
+            int bestGain = max({leftBoundaryGain, rightBoundaryGain, internalGain});
+            ans.push_back(originalOnes + bestGain);
+        }
+
+        return ans;
+    }
+};

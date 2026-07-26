@@ -1,0 +1,55 @@
+SOLUTION ===>>
+
+----------------APPROACH 1[SORTING AND FINDING ANSWERS]-----------------------------
+
+
+class Solution {
+public:
+    int maximumProduct(vector<int>& nums) {
+        int n = nums.size();
+
+        sort(begin(nums), end(nums));
+        
+        int lastThreeProduct = nums[n-1] * nums[n-2] * nums[n-3];
+
+        int productOfFirstTwoAndLast = nums[0] * nums[1] * nums[n-1];
+
+        return max(lastThreeProduct, productOfFirstTwoAndLast);
+    }
+};
+
+
+
+----------------APPROACH 2[FIND ALL 3 LARGEST AND 2 SMALLEST NUMBERS AND THEN CALCULATING USING SIMPLE MATH]-------------------------
+
+class Solution {
+public:
+    int maximumProduct(vector<int>& nums) {
+        int n = nums.size();
+
+        int largest = INT_MIN, secondlargest = INT_MIN, thirdlargest = INT_MIN;
+        int smallest = INT_MAX, secondsmallest = INT_MAX;
+
+        for(int &num: nums){
+            if(num > largest){
+                thirdlargest = secondlargest;
+                secondlargest = largest;
+                largest = num;
+            }else if(num > secondlargest){
+                thirdlargest = secondlargest;
+                secondlargest = num;
+            }else if(num > thirdlargest){
+                thirdlargest = num;
+            }
+
+            if(num <= smallest){
+                secondsmallest = smallest;
+                smallest = num;
+            }else if(num < secondsmallest){
+                secondsmallest = num;
+            }
+        }
+
+        return max(largest*secondlargest*thirdlargest, smallest*secondsmallest*largest);
+    }
+};

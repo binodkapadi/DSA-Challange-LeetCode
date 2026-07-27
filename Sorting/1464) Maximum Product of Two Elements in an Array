@@ -1,5 +1,7 @@
 SOLUTION ===>>>
 
+------------------APPROACH 1 ------------------------------------
+
 
 class Solution {
 public:
@@ -14,5 +16,49 @@ public:
         int product = (nums[i] -1) * (nums[j] - 1);
 
         return product;   
+    }
+};
+
+
+------------------APPROACH 2 ------------------------------------
+
+class Solution {
+public:
+    int maxProduct(vector<int>& nums) {
+        int largest = 0, second_largest = 0;
+
+        for(int &num: nums){
+            if(num > largest){
+                second_largest = largest;
+                largest = num;
+            }
+            else if (num > second_largest){
+                second_largest = num;
+            }
+        }
+
+        int product = (largest-1) * (second_largest-1);
+
+        return product;
+    }
+};
+
+
+
+------------------APPROACH 3 ------------------------------------
+
+class Solution {
+public:
+    int maxProduct(vector<int>& nums) {
+        int n = nums.size();
+        int max_num = nums[0];  // we assume here
+        int product = 0;
+
+        for(int i = 1; i < n; i++){
+            product = max(product, (nums[i]-1) * (max_num-1));
+
+            max_num = max(max_num, nums[i]);
+        }
+        return product;
     }
 };

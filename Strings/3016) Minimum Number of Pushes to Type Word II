@@ -1,5 +1,7 @@
 SOLUTION ===>>
 
+------------------APPROCAH 1--------------------------------------
+
 class Solution {
 public:
     int minimumPushes(string word) {
@@ -20,6 +22,32 @@ public:
             int push = i/8 + 1;
             result += (freq * push);
             initial_key++;
+        }
+        return result;
+    }
+};
+
+
+
+--------------------APPROACH 2-------------------------------------------
+
+class Solution {
+public:
+    int minimumPushes(string word) {
+        vector<int> fq_count(26,0);
+
+        for(char &ch: word){
+            fq_count[ch-'a']++;
+        }
+        sort(begin(fq_count), end(fq_count), greater<int>());  //For descending order short
+
+        int result = 0;
+        for(int i = 0; i < 26; i++){
+            if(fq_count[i] == 0)  continue;
+
+            int freq = fq_count[i];
+            int push = i/8 + 1;
+            result += (freq * push);
         }
         return result;
     }

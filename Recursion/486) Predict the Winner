@@ -1,0 +1,106 @@
+SOLUTION ====>>>>
+
+
+---------------------APPROACH 1[RECURSION I]---------------------------
+class Solution {
+public:
+    int solve(int i , int j, vector<int>& nums){
+        if(i > j){
+            return 0;
+        }
+        if(i == j){
+            return nums[i];
+        }
+
+        int take_i = nums[i] + min(solve(i+2, j, nums), solve(i+1, j-1, nums));
+        int take_j = nums[j] + min(solve(i+1, j-1, nums), solve(i, j-2, nums));
+
+        return max(take_i, take_j);
+    }
+    bool predictTheWinner(vector<int>& nums) {
+        int n = nums.size();
+
+        int total_sum = 0;
+        for(int i = 0; i < n; i++){
+            total_sum += nums[i];
+        }
+
+        int player1_score = solve(0, n-1, nums);
+
+        int player2_score = total_sum - player1_score;
+
+        return player1_score >= player2_score;
+    }
+};
+
+
+---------------------------APPROACH 2[RECURSION I + MEMONIZATION]---------------------------------------------
+
+
+class Solution {
+public:
+    int t[21][21];
+    int solve(int i , int j, vector<int>& nums){
+        if(i > j){
+            return 0;
+        }
+        if(i == j){
+            return nums[i];
+        }
+        if(t[i][j] != -1){
+            return t[i][j];
+        }
+
+        int take_i = nums[i] + min(solve(i+2, j, nums), solve(i+1, j-1, nums));
+        int take_j = nums[j] + min(solve(i+1, j-1, nums), solve(i, j-2, nums));
+
+        return t[i][j] = max(take_i, take_j);
+    }
+    bool predictTheWinner(vector<int>& nums) {
+        memset(t, -1, sizeof(t));
+        int n = nums.size();
+
+        int total_sum = 0;
+        for(int i = 0; i < n; i++){
+            total_sum += nums[i];
+        }
+
+        int player1_score = solve(0, n-1, nums);
+
+        int player2_score = total_sum - player1_score;
+
+        return player1_score >= player2_score;
+    }
+};
+
+-------------------------APPROACH 3[ RECURSION II + MEMONIZATION]--------------------------------------------
+
+
+class Solution {
+public:
+    int t[21][21];
+    int solve(int i , int j, vector<int>& nums){
+        if(i > j){
+            return 0;
+        }
+        if(i == j){
+            return nums[i];
+        }
+        if(t[i][j] != -1){
+            return t[i][j];
+        }
+
+        int take_i = nums[i] - solve(i+1, j, nums);
+        int take_j = nums[j] - solve(i, j-1, nums);
+
+        return t[i][j] = max(take_i, take_j);
+    }
+    bool predictTheWinner(vector<int>& nums) {
+        memset(t, -1, sizeof(t));
+        int n = nums.size();
+
+        int player1_score = solve(0, n-1, nums);
+
+        return player1_score >= 0;
+    }
+};

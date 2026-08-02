@@ -1,0 +1,36 @@
+SOLUTION ===>>>
+
+
+class Solution {
+public:
+    int t[501][501];
+    int sum(int i, int j, vector<int>& piles){
+        if(i > j)
+            return 0;
+        
+        if(t[i][j] != -1)
+            return t[i][j];
+        
+        int take_i = piles[i] + min(sum(i+2, j, piles), sum(i+1, j-1, piles));
+        int take_j = piles[j] + min(sum(i+1, j-1, piles), sum(i, j-2, piles));
+
+        return t[i][j] = max(take_i, take_j);
+    }
+    bool stoneGame(vector<int>& piles) {
+        memset(t , -1, sizeof(t));
+        int n = piles.size();
+        // int total_count = 0;
+
+        // for(int i = 0; i < n; i++){
+        //     total_count += piles[i];
+        // }
+
+        int total_count = accumulate(begin(piles), end(piles), 0);
+
+        int count_Alice = sum(0, n-1, piles);
+
+        int count_Bob = total_count - count_Alice;
+
+        return count_Alice > count_Bob;    
+    }
+};

@@ -1,0 +1,21 @@
+SOLUTION ====>>>
+
+
+class Solution {
+public:
+    vector<int> findMissingElements(vector<int>& nums) {
+        int n = nums.size();
+
+        vector<int> result;
+
+        sort(begin(nums), end(nums));
+
+        for(int i = nums[0]; i <= nums[n-1]; i++ ){
+            if(find(begin(nums), end(nums), i) != end(nums)){
+                continue;
+            }
+            result.push_back(i);
+        }
+        return result;
+    }
+};

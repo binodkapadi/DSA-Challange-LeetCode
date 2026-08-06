@@ -1,0 +1,20 @@
+SOLUTION ===>>
+
+class Solution {
+public:
+    int smallestNumber(int n, int t) {
+        for(int i = n; i <= 100; i++){
+            int curr_digit = i;
+            int prod = 1;
+
+            while(curr_digit > 0){
+                prod = prod * (curr_digit % 10);
+                curr_digit /= 10;
+            }
+            if(prod % t == 0){
+                return i;
+            }
+        }
+        return 1;
+    }
+};

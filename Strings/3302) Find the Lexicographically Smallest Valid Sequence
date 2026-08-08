@@ -1,0 +1,43 @@
+SOLUTION ====>>>
+
+
+class Solution {
+public:
+    vector<int> validSequence(string word1, string word2) {
+        int m = word1.length();
+        int n = word2.length();
+
+        vector<int> rightMatched(m, 0); // We took extra space to store the matched character of word2 in word1 which can we fruther used.
+        int i = m-1;
+        int j = n-1;
+        int matchedChar = 0;
+
+        while(i >= 0){
+            if(j >= 0 && word1[i] == word2[j]){
+                matchedChar++;
+                j--;
+            }
+            rightMatched[i] = matchedChar;
+            i--;
+        }
+
+        vector<int> seq;
+        bool changePower = true;
+        i = 0;
+        j = 0;
+
+        while(i < m && j < n){
+            if(word1[i] == word2[j]){
+                seq.push_back(i);
+                j++;
+            }else if(changePower == true && i+1 < m && rightMatched[i+1] >= n-j-1){
+                seq.push_back(i);
+                j++;
+                changePower = false;
+            }
+            i++;
+        }
+        return (j == n) ? seq: vector<int> ();
+        // if we reached the end of the word2 then if lexicographically smallest sequence if found then return that sequence otherwise return the empty array. [Ternary operator used]
+    }
+};

@@ -1,0 +1,45 @@
+SOLUTION ===>>
+
+
+class Solution {
+public:
+    int n;
+    int t[3][101][51];
+    int solveAlice(int person, int i, int M, vector<int>& piles){
+        int stone = 0;
+        int result;
+        
+        if(person == 1)
+            result = INT_MIN;
+        else
+            result = INT_MAX;
+        
+         if(i >= n)
+           return 0;
+
+        if(t[person][i][M] != -1)
+            return t[person][i][M];
+        
+        for(int x = 1; x <= min(2*M, n-i); x++){
+            stone += piles[i+x-1];
+
+            if(person == 1){ //Alice
+                result = max(result, (stone + solveAlice(0, i+x, max(M, x), piles)));
+            }else{ //Bob
+                result = min(result, solveAlice(1, i+x, max(M,x), piles));
+            }
+        }   
+        return t[person][i][M] = result;
+    }
+
+    int stoneGameII(vector<int>& piles) {
+        memset(t,-1, sizeof(t));
+        n = piles.size();
+
+        //Suppose ALice -> 1 and Bob -> 0
+
+        int Alice = solveAlice(1, 0, 1, piles);
+
+        return Alice;
+    }
+};

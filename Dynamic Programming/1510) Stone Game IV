@@ -1,0 +1,51 @@
+SOLUTION ===>>
+
+
+----------------APPROACH 1[ USING RECURSION AND MEMOIZATION] ----------------------------------------
+class Solution {
+public:
+    vector<int> t;
+    bool solve(int n){
+        if(n == 0){
+            return false; //Whoever reaches hear he looses
+        }
+        if(t[n] != -1){
+            return t[n] == 1? true:false;
+        }
+        for(int i = 1; i*i <= n; i++){
+            if(solve(n - i*i) == false){  // Bob didn't wins means Alice wins
+                return t[n] = true;  //Alice Wins
+            }
+        }
+        return t[n] = false; // Alice will Never wins
+    }
+    bool winnerSquareGame(int n) {
+        t.resize(n+1, -1);
+        return solve(n);
+    }
+};
+
+----------------APPROACH 2[ USING BUTTOM UP AND MEMOIZATION] ----------------------------------------
+
+class Solution {
+public:
+    bool winnerSquareGame(int n) {
+        vector<bool> t(n+1, false);
+
+        //Base case . n== 0, return false
+        //i == 0
+        t[0] = false; //base case
+
+        for(int i = 1; i < n+1; i++) {
+
+            for(int k = 1; k*k <= i; k++) {
+                if(t[i - (k*k)] == false) {
+                    t[i] = true;
+                    break;
+                }
+            }
+        }
+
+        return t[n]; //return solve(n)
+    }
+};

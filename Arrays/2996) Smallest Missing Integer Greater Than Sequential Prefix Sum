@@ -1,0 +1,54 @@
+SOLUTION ===>>
+
+---------------------APPROACH 1[USING LOOPS (ie. BRUTFORCE APPROACH)]-----------------------
+
+class Solution {
+public:
+    int missingInteger(vector<int>& nums) {
+        int n = nums.size();
+        int sum = nums[0];
+
+        for(int j = 1; j < n; j++){
+            if(nums[j] == nums[j-1] + 1){
+                sum += nums[j];
+            }else{
+                break;
+            }
+        }
+        while(true){
+            if(find(begin(nums), end(nums), sum) != end(nums)){
+                sum++;
+            }
+            else{
+                break;
+            }
+        }
+        return sum;   
+    }
+};
+
+
+---------------------APPROACH 2[ USING SETS AND INBUILT FUNCTIONS] -------------------------------
+
+
+class Solution {
+public:
+    int missingInteger(vector<int>& nums) {
+        int n = nums.size();
+        int sum = nums[0];
+
+        for(int j = 1; j < n; j++){
+            if(nums[j] == nums[j-1] + 1){
+                sum += nums[j];
+            }else{
+                break;
+            }
+        }
+        unordered_set<int> values(nums.begin(), nums.end());
+
+        while(values.count(sum)){
+            sum++;
+        }
+        return sum;   
+    }
+};

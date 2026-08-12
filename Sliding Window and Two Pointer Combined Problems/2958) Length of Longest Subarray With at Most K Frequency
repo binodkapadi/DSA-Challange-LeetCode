@@ -1,7 +1,7 @@
 SOLUTION ===>>>
 
 
---------------------APPROACH 1 [USING TWO POINTER AND HASH MAP]------------------------------
+--------------------APPROACH 1 [USING TWO POINTER AND HASH MAP NESTED LOOPS]------------------------------
 
 
 class Solution {
@@ -21,6 +21,44 @@ public:
                 i++;
             }
             result = max(result , j-i+1);
+            j++;
+        }
+        return result;
+    }
+};
+
+
+
+--------------------APPROACH 2 [WITHOUT USING NESTED LOOP]------------------------------
+
+class Solution {
+public:
+    int maxSubarrayLength(vector<int>& nums, int k) {
+        int n = nums.size();
+        unordered_map<int, int> freq;
+
+        int i = 0, j = 0;
+        int result = INT_MIN;
+
+        int culprit = 0;
+
+        while(j < n){
+            freq[nums[j]]++;
+
+            if(freq[nums[j]] == k+1){
+                culprit ++;
+            }
+
+            if(culprit > 0){
+                freq[nums[i]]--;
+                if(freq[nums[i]] == k){
+                    culprit--;
+                }
+                i++;
+            }
+            if(culprit == 0){
+                result = max(result , j-i+1);
+            }
             j++;
         }
         return result;

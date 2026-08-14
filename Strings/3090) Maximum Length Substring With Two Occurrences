@@ -16,7 +16,7 @@ public:
         while(j < n){
             freq[s[j]]++;
 
-            while(freq[s[j]] > 2){
+            while(i < j && freq[s[j]] > 2){
                 freq[s[i]]--;
                 i++;
             }
@@ -29,7 +29,7 @@ public:
 
 
 
--------------------------APPROACH 1[USING vectorof constant size AND O(1) SPACE COMPLEXITY]-----------------------
+-------------------------APPROACH 1[USING vector of constant size AND O(1) SPACE COMPLEXITY]-----------------------
 
 
 class Solution {
@@ -44,7 +44,7 @@ public:
         while(j < n){
             freq[s[j] - 'a']++;
 
-            while(freq[s[j] - 'a'] > 2){
+            while(i < j && freq[s[j] - 'a'] > 2){
                 freq[s[i] - 'a']--;
                 i++;
             }

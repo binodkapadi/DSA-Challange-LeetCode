@@ -1,0 +1,77 @@
+SOLUTION ===>>>
+
+------------------APPROACH 1 [USING UNORDERED MAP AND UNORDERED SET]--------------------------------------------
+
+class Solution {
+public:
+    int maxNumberOfFamilies(int n, vector<vector<int>>& reservedSeats) {
+        unordered_map<int, unordered_set<int>> mp; //=> for storing the reserved seats corresponding to each row.
+
+        for(auto& reservedSeat : reservedSeats){
+            int row = reservedSeat[0];
+            int seat = reservedSeat[1];
+
+            mp[row].insert(seat);
+        }
+
+        int result = (n - mp.size()) * 2;
+
+        for(auto &[row, bookedSeat] : mp){
+
+            auto isAvailable = [&](int seat){
+                return bookedSeat.find(seat) == bookedSeat.end();
+            };
+
+            int groupA = isAvailable(2) && isAvailable(3) && isAvailable(4) && isAvailable(5);
+            int groupB = isAvailable(4) && isAvailable(5) && isAvailable(6) && isAvailable(7);
+            int groupC = isAvailable(6) && isAvailable(7) && isAvailable(8) && isAvailable(9);
+
+            if(groupA && groupC){
+                result += 2;
+            }
+            else if(groupA || groupB || groupC){
+                result += 1;
+            }
+        }
+        return result;
+    }
+};
+
+
+
+------------------APPROACH 2 [USING UNORDERED MAP AND BIT MASK]--------------------------------------------
+
+class Solution {
+public:
+    int maxNumberOfFamilies(int n, vector<vector<int>>& reservedSeats) {
+        unordered_map<int, int> mp; //=> for storing the reserved seats corresponding to each row.
+
+        for(auto& reservedSeat : reservedSeats){
+            int row = reservedSeat[0];
+            int seat = reservedSeat[1];
+
+            mp[row] |= (1 << seat);
+        }
+
+        int result = (n - mp.size()) * 2;
+
+        int maskA = (1 << 2) | (1 << 3) | (1 << 4) | (1 << 5);
+        int maskB = (1 << 4) | (1 << 5) | (1 << 6) | (1 << 7);
+        int maskC = (1 << 6) | (1 << 7) | (1 << 8) | (1 << 9);
+
+        for(auto &[row, bookedSeatMask] : mp){
+
+            int groupA = (bookedSeatMask & maskA) == 0;
+            int groupB = (bookedSeatMask & maskB) == 0;
+            int groupC = (bookedSeatMask & maskC) == 0;
+
+            if(groupA && groupC){
+                result += 2;
+            }
+            else if(groupA || groupB || groupC){
+                result += 1;
+            }
+        }
+        return result;
+    }
+};

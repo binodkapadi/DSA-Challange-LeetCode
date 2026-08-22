@@ -1,0 +1,22 @@
+SOLUTION ===>>>
+
+
+class Solution {
+public:
+    bool checkDivisibility(int n) {
+        int sum = 0;
+        int prod = 1;
+        int total;
+        int m = n;
+
+        while(m > 0){
+            sum += (m % 10);
+            prod *= (m % 10);
+
+            m /=  10;
+        }
+        total = (sum + prod);
+
+        return (n % total == 0)? true : false;   
+    }
+};

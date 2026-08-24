@@ -1,0 +1,67 @@
+SOLUTION ===>>>
+
+--------------------APPROACH 1[USING RECURSION AND MEMOIZATION]-------------------
+
+NOTE: It passes all the test cases except one test case 
+
+
+class Solution {
+public:
+    int n;
+    int t[100001];
+
+    int solve(int i,vector<int>& stones ){
+        if(i == n-1){
+            return stones[i];
+        }
+        if(t[i] != -1)
+            return t[i];
+
+        int take = stones[i] - solve(i+1, stones);
+        int skip = solve(i+1, stones);
+
+        return t[i] = max(take, skip);
+    }
+
+    int stoneGameVIII(vector<int>& stones) {
+        n = stones.size();
+        memset(t, -1, sizeof(t));
+        
+        for(int i = 1; i < n; i++){
+            stones[i] += stones[i-1];
+        }
+
+        return solve(1, stones);
+    }
+};
+
+
+
+
+--------------------APPROACH 2[USING BUTTOMUP APPROACH ]-------------------
+
+
+
+class Solution {
+public:
+    int stoneGameVIII(vector<int>& stones) {
+        int n = stones.size();
+
+        for(int i = 1; i < n; i++){
+            stones[i] += stones[i-1];
+        }
+
+        vector<int> t(n, 0);
+
+        t[n-1] = stones[n-1];
+
+        for(int i = n-2; i >= 1; i--){
+            int take = stones[i] - t[i+1];
+            int skip = t[i+1];
+
+            t[i] = max(take, skip);
+        }
+
+        return t[1];
+    }
+};

@@ -1,0 +1,38 @@
+SOLUTION ===>>>
+
+
+---------------------APPROACH 1 [WITHOUT USING ANY SPACE SIMPLE CALCULATION]------------------------------
+
+class Solution {
+public:
+    int missingMultiple(vector<int>& nums, int k) {
+        int n = nums.size();
+
+        for(int i = 1; i <= n+1; i++){
+            int curr = k * i;
+            if(find(begin(nums), end(nums), curr) == end(nums)){
+                return curr;
+            }
+        }
+        return 0;
+    }
+};
+
+
+
+
+-----------------------------APPROACH 2[WITH USING A CONSTANT SPACE IN THE FORM OF SET]------------------------------
+
+
+class Solution {
+public:
+    int missingMultiple(vector<int>& nums, int k) {
+        unordered_set<int> missing(nums.begin(), nums.end());
+        int missing_num = k;
+        
+        while(missing.count(missing_num)){
+            missing_num += k;
+        }
+        return missing_num;
+    }
+};

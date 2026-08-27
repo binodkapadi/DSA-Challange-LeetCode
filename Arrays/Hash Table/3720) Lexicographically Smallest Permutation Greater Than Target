@@ -1,0 +1,73 @@
+SOLUTION ====>>>
+
+
+class Solution {
+public:
+    string lexGreaterPermutation(string s, string target) {
+
+        // Count frequencies of each character (a-z)
+        vector<int> count(26, 0);
+        for (char c : s) {
+            count[c - 'a']++;
+        }
+
+        int n = s.length();
+        int m = target.length();
+        string current_prefix = "";
+
+        // We will track the best result found
+        string best_res = "";
+
+        //Iterate through all possible matching prefix lengths from 0 to min(n, m)
+        for (int i = 0; i <= min(n, m); ++i) {
+            if (i > 0) {
+                char prev_char = target[i - 1];
+                if (count[prev_char - 'a'] > 0) {
+                    current_prefix += prev_char;
+                    count[prev_char - 'a']--;
+                } else {
+                    // If s cannot match the target prefix up to this point, stop searching deeper
+                    break;
+                }
+            }
+
+            // Case A: The prefix matches the target fully, but s is longer.
+            if (i == m) {
+                if (n > i) {
+                    string rem = "";
+                    for (int c = 0; c < 26; ++c) {
+                        rem += string(count[c], 'a' + c);
+                    }
+                    best_res = current_prefix + rem;
+                }
+                continue;
+            }
+
+            // Case B: Diverge here by picking a character strictly greater than target[i]
+            char target_char = target[i];
+            for (int c = (target_char - 'a') + 1; c < 26; ++c) {
+                if (count[c] > 0) {
+                    // Pick this slightly larger character
+                    string rem = "";
+                    rem += (char)('a' + c);
+                    
+                    // Consume it temporarily from the count pool
+                    count[c]--;
+                    
+                    // Fill the absolute smallest remaining characters in sorted order
+                    for (int j = 0; j < 26; ++j) {
+                        if (count[j] > 0) {
+                            rem += string(count[j], 'a' + j);
+                        }
+                    }
+                    
+                    // Put it back to keep count array accurate for subsequent loop steps
+                    count[c]++; 
+                    best_res = current_prefix + rem;
+                    break; // Break the 'c' loop because we want the smallest character greater than target[i]
+                }
+            }
+        }
+        return best_res;
+    }
+};

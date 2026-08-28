@@ -1,7 +1,57 @@
 SOLUTION ====>>>
 
+-------------------------APPROACH 1[RECURSION AND BACKTRACKING]----------------------------
 
--------------------------APPROACH 1[cOUNTING THE FREQUENCY FIRST TEM BACKTRACKING]----------------------------
+class Solution {
+public:
+    string result = "";
+
+    bool solve(string& curr, vector<int>& count, string& target, int i , bool greater){
+        //Base Case
+        if(i == target.length()){
+            if(greater){
+                result = curr;
+                return true;
+            }else{
+                return false;
+            }
+        }
+        for(char ch = 'a'; ch <= 'z'; ch++){
+            if(count[ch - 'a'] == 0 || (greater == false && ch < target[i]))
+                continue;
+            
+            curr.push_back(ch);
+            count[ch - 'a']--;
+
+            bool isGreater = greater || ch > target[i];
+
+            if(solve(curr, count, target, i+1, isGreater))
+                return true;
+
+            curr.pop_back();
+            count[ch -'a']++;
+
+        }
+        return false;
+    }
+    string lexGreaterPermutation(string s, string target) {
+        //Map character frequencies for string 's'
+        vector<int> count(26, 0);
+        for (char c : s) {
+            count[c - 'a']++;
+        }
+
+        string curr;
+
+        solve(curr, count, target, 0, false);
+
+        return result;
+    }
+};
+
+
+
+-------------------------APPROACH 2[cOUNTING THE FREQUENCY FIRST TEM BACKTRACKING]----------------------------
 
 class Solution {
 public:
@@ -60,7 +110,7 @@ public:
 };
 
 
-------------------------APPROACH 2[GENERAL APPROACH]--------------------------------------------
+------------------------APPROACH 3[GENERAL APPROACH]--------------------------------------------
 
 class Solution {
 public:

@@ -1,0 +1,76 @@
+SOLUTION ====>>>
+
+
+class Solution {
+public:
+    char oddChar = '#';
+    int halfLength = 0;
+    string result = "";
+
+    bool solve(string& curr, vector<int>& count, string& target, int i, bool greater){
+
+        if(i == halfLength){
+            string fullStr = curr;
+            if(oddChar != '#'){
+                fullStr += oddChar;
+            }
+            string rev = curr;
+            reverse(rev.begin(), rev.end());
+            fullStr += rev;
+
+            if(fullStr > target){
+                result = fullStr;
+                return true;
+            }
+            return false;
+        }
+
+        for(char ch = 'a'; ch <= 'z'; ch++){
+            if(count[ch - 'a'] == 0 || (greater == false && ch < target[i]))
+                continue;
+
+            curr.push_back(ch);
+            count[ch -'a']--;
+
+            bool isGreater = greater || ch > target[i];
+
+            if(solve(curr, count, target, i+1, isGreater))
+                return true;
+            
+            curr.pop_back();
+            count[ch - 'a']++;
+        }
+        return false;
+    }
+    string lexPalindromicPermutation(string s, string target) {
+
+        //Frequency count of the string
+        vector<int> count(26,0);
+        for(char &ch : s){
+            count[ch -'a']++;
+        }
+        
+        int oddCount = 0;
+        for(int i = 0; i < 26; i++){
+            if(count[i] % 2 != 0){
+                oddCount++;
+                oddChar = 'a' + i;
+            }
+        }
+
+        if(oddCount > 1)
+            return "";
+
+        for(int i = 0; i < 26; i++){
+            count[i] /= 2;
+        }
+        
+        string curr;
+
+        halfLength = s.length() / 2;
+
+        solve(curr, count, target, 0, false);
+
+        return result;    
+    }
+};

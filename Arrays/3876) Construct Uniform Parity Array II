@@ -1,0 +1,24 @@
+SOLUTION ====>>>
+
+class Solution {
+public:
+    bool uniformArray(vector<int>& nums1) {
+        // int min_num = *min_element(nums1.begin(), nums1.end());
+        int min_num = nums1[0];
+        for(int i = 1; i < nums1.size(); i++){
+            if(nums1[i] < min_num){
+                min_num = nums1[i];
+            }
+        }
+        if(min_num % 2 == 1){
+            return true;
+        }
+
+        for(int &num : nums1){
+            if(num % 2 == 1){
+                return false;
+            }
+        }
+        return true;
+    }
+};

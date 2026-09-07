@@ -1,0 +1,66 @@
+SOLUTION ===>>
+
+--------------------APPROACH 1 [USING RECURSION AND MEMOIZATION]----------------------------
+
+class Solution {
+public:
+    const int MOD = 1e9 + 7;
+    int memo[2001];
+
+    int solve(string &s, int idx){
+        //Base Case
+        if(idx >= s.length())
+            return 1;
+        
+        if(memo[idx] != -1)
+            return memo[idx];
+
+        long long total = 1;
+        bool visited[26] = {false};
+
+        for(int i = idx; i < s.length(); i++){
+            int char_idx = s[i] - 'a';
+            if(!visited[char_idx]){
+                visited[char_idx] = true;
+                total = (total + solve(s, i+1)) % MOD;
+            }
+        }
+        return memo[idx] = total;
+    }
+    int distinctSubseqII(string s) {
+        memset(memo, -1, sizeof(memo));
+
+        return (solve(s, 0) - 1 + MOD) % MOD;
+    }
+};
+
+
+
+------------------------------APPROACH 2[ ITERATIVE APPROACH + DP] -------------------------------------
+
+
+class Solution {
+public:
+    const int MOD = 1e9 + 7;
+    int distinctSubseqII(string s) {
+        int n = s.length();
+        vector<int> dp(n+1, 0);
+        
+        dp[0] = 1;
+
+        vector<int> last(26, -1);
+
+        for(int i = 0; i < n; i++){
+            int char_idx = s[i] - 'a';
+
+            dp[i+1] = (dp[i] * 2) % MOD;
+
+            if(last[char_idx] >= 0){
+                dp[i+1] -= dp[last[char_idx]];
+            }
+            dp[i+1] %= MOD;
+            last[char_idx] = i;
+        }
+        return (dp[n] -1 + MOD) % MOD;
+    }
+};

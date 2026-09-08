@@ -1,0 +1,28 @@
+SOLUTION ====>>>
+
+
+class Solution {
+public:
+    int countCommas(int n) {
+        int count = 0;
+
+        //Base Case
+        if(n < 1000){
+            return 0;
+        }
+        for(int i = 1000; i <= n; i++){
+            count++;
+        }
+        return count;
+    }
+};
+
+
+=====================================================================
+
+class Solution {
+public:
+    int countCommas(int n) {
+        return max(n-999, 0);
+    }
+};

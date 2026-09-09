@@ -1,0 +1,31 @@
+SOLUTION ====>>> 
+
+
+class Solution {
+public:
+    typedef long long ll;
+
+    long long countCommas(long long n) {
+        ll total_comma = 0;
+        ll comma_inrange = 1;
+        ll start_range = 1000;
+
+        while(n >= start_range){
+            ll next_range = start_range * 1000;
+
+            ll number_count = min(n, next_range - 1) - start_range + 1;
+
+            total_comma += number_count * comma_inrange;
+
+            start_range = next_range;
+            comma_inrange++;
+
+            if(start_range > n / 1000 && start_range <= n){
+                number_count = n - start_range + 1;
+                total_comma += number_count * comma_inrange;
+                break;
+            }
+        }
+        return total_comma;
+    }
+};

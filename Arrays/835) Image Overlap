@@ -1,0 +1,39 @@
+SOLUTION ===>>>
+
+
+class Solution {
+public:
+    int n;
+
+    int countOverlaps(vector<vector<int>>& img1, vector<vector<int>>& img2, int row_off, int col_off){
+        int count = 0;
+        
+        for(int i = 0; i < n; i++){
+            for(int j = 0; j < n; j++){
+
+                if(i + row_off < 0 || i + row_off >= n || j + col_off < 0 || j + col_off >= n){
+                    continue;
+                }
+
+                if(img1[i][j] == 1 && img2[i + row_off][j + col_off] == 1){
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    int largestOverlap(vector<vector<int>>& img1, vector<vector<int>>& img2) {
+        n = img1.size();
+        int maxOverlaps = 0;
+
+        for(int row_off = -n+1; row_off < n; row_off++){
+            for(int col_off = -n+1; col_off < n; col_off++){
+                int count1 = countOverlaps(img1, img2, row_off, col_off);
+
+                maxOverlaps = max(maxOverlaps, count1);
+            }
+        }
+        return maxOverlaps;
+    }
+};

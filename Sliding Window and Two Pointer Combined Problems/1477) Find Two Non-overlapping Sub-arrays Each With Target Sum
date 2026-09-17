@@ -1,0 +1,39 @@
+SOLUTION ===>>>
+
+class Solution {
+public:
+    int minSumOfLengths(vector<int>& arr, int target) {
+        int n = arr.size();
+
+        int i = 0;
+        int j = 0;
+        int currSum = 0;
+
+        vector<int> minBestLengthTillIdx(n, INT_MAX);
+
+        int bestMinLen = INT_MAX;
+        int result = INT_MAX;
+
+        //Sliding window
+        while(j < n){
+            currSum += arr[j];
+
+            while(i < j && currSum > target){
+                currSum -= arr[i];
+                i++;
+            }
+            if(currSum == target){
+                int len = j-i+1;
+
+                if(i > 0 && minBestLengthTillIdx[i-1] != INT_MAX){
+                    result = min(result, len + minBestLengthTillIdx[i-1]);
+                }
+                bestMinLen = min(bestMinLen, len);
+            }
+
+            minBestLengthTillIdx[j] = bestMinLen;
+            j++;
+        }
+        return result == INT_MAX ? -1 : result;
+    }
+};
